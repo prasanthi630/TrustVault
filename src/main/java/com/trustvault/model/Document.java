@@ -5,8 +5,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "documents")
 public class Document {
 
     @Id
@@ -14,8 +16,11 @@ public class Document {
     private Long id;
 
     private String fileName;
+
     private String contentType;
+
     private long fileSize;
+
     private String storagePath;
 
     public Document() {

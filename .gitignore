@@ -46,3 +46,7 @@ build/
 *.zip
 *.tar.gz
 *.rar
+trustvault.key
+src/main/resources/trustvault.key
+uploads/
+data/
