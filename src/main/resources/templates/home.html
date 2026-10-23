@@ -1,0 +1,597 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustVault | Secure Your Digital World</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #080d1c;
+    color: #f8fafc;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    top: -180px;
+    left: -160px;
+    background: #2563eb;
+    filter: blur(180px);
+    opacity: .22;
+    pointer-events: none;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    bottom: -200px;
+    right: -100px;
+    background: #9333ea;
+    filter: blur(160px);
+    opacity: .18;
+    pointer-events: none;
+}
+
+nav {
+    position: relative;
+    z-index: 2;
+    max-width: 1250px;
+    margin: auto;
+    padding: 25px 35px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ffffff12;
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: -.7px;
+}
+
+.logo span {
+    color: #60a5fa;
+}
+
+.logo-icon {
+    color: #60a5fa;
+    margin-right: 7px;
+}
+
+nav .links {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+nav a {
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 14px;
+    transition: .3s;
+}
+
+nav a:hover {
+    color: #93c5fd;
+}
+
+.nav-btn {
+    padding: 12px 20px;
+    border: 1px solid #475569;
+    border-radius: 9px;
+}
+
+.hero {
+    position: relative;
+    z-index: 1;
+    max-width: 1250px;
+    min-height: 610px;
+    margin: auto;
+    padding: 75px 35px;
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    align-items: center;
+    gap: 60px;
+}
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 15px;
+    border: 1px solid #60a5fa40;
+    background: #2563eb16;
+    color: #93c5fd;
+    border-radius: 30px;
+    font-size: 12px;
+    letter-spacing: 1.2px;
+    font-weight: 700;
+    margin-bottom: 28px;
+}
+
+.dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #60a5fa;
+    box-shadow: 0 0 12px #60a5fa;
+}
+
+h1 {
+    font-size: clamp(42px, 5.2vw, 69px);
+    line-height: 1.08;
+    letter-spacing: -2.5px;
+    margin-bottom: 25px;
+}
+
+.gradient-text {
+    background: linear-gradient(90deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.description {
+    color: #a7b4ca;
+    max-width: 520px;
+    font-size: 17px;
+    line-height: 1.9;
+    margin-bottom: 32px;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.primary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(110deg, #2563eb, #7c3aed);
+    padding: 16px 23px;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 700;
+    box-shadow: 0 8px 30px #4f46e540;
+    transition: .3s;
+}
+
+.primary-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px #4f46e566;
+}
+
+.secondary-btn {
+    color: #dbeafe;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.trust-note {
+    margin-top: 27px;
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.visual {
+    position: relative;
+    padding: 25px;
+    border: 1px solid #ffffff1c;
+    border-radius: 24px;
+    background: linear-gradient(145deg, #18243bdb, #10172bdd);
+    box-shadow: 0 30px 90px #00000055;
+    backdrop-filter: blur(20px);
+    animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-9px); }
+}
+
+.visual-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 22px;
+    border-bottom: 1px solid #ffffff12;
+}
+
+.visual-header h3 {
+    font-size: 15px;
+}
+
+.status {
+    color: #86efac;
+    background: #16a34a20;
+    border: 1px solid #22c55e35;
+    padding: 7px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+}
+
+.shield-area {
+    margin: 24px 0;
+    padding: 25px;
+    text-align: center;
+    border: 1px solid #60a5fa30;
+    border-radius: 18px;
+    background: radial-gradient(circle at center, #2563eb28, #111a2d 70%);
+}
+
+.shield {
+    width: 100px;
+    height: 100px;
+    margin: auto auto 18px;
+    display: grid;
+    place-items: center;
+    border-radius: 28px;
+    background: linear-gradient(145deg, #2563eb, #7c3aed);
+    box-shadow: 0 0 50px #3b82f640;
+    font-size: 45px;
+}
+
+.shield-area h2 {
+    font-size: 19px;
+    margin-bottom: 8px;
+}
+
+.shield-area p {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.doc-row {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 15px 13px;
+    margin-top: 10px;
+    border: 1px solid #ffffff12;
+    background: #ffffff06;
+    border-radius: 12px;
+}
+
+.file-icon {
+    width: 43px;
+    height: 43px;
+    display: grid;
+    place-items: center;
+    background: #2563eb22;
+    border-radius: 11px;
+    font-size: 21px;
+}
+
+.doc-info {
+    flex: 1;
+}
+
+.doc-info strong {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.doc-info small {
+    color: #94a3b8;
+    font-size: 10px;
+}
+
+.lock {
+    color: #86efac;
+    font-size: 18px;
+}
+
+.features {
+    position: relative;
+    z-index: 1;
+    padding: 70px 35px 90px;
+    max-width: 1250px;
+    margin: auto;
+}
+
+.section-heading {
+    text-align: center;
+    margin-bottom: 42px;
+}
+
+.section-heading .label {
+    color: #93c5fd;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.section-heading h2 {
+    font-size: clamp(28px, 4vw, 40px);
+    margin: 15px 0;
+}
+
+.section-heading p {
+    color: #94a3b8;
+    line-height: 1.7;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+.feature-card {
+    padding: 28px;
+    border: 1px solid #ffffff14;
+    background: linear-gradient(145deg, #172137c9, #0f172a);
+    border-radius: 18px;
+    transition: .3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-6px);
+    border-color: #60a5fa80;
+}
+
+.feature-icon {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: #2563eb22;
+    font-size: 25px;
+    margin-bottom: 23px;
+}
+
+.feature-card h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+.feature-card p {
+    color: #94a3b8;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.cta {
+    position: relative;
+    z-index: 1;
+    max-width: 1180px;
+    margin: 0 auto 70px;
+    padding: 50px 30px;
+    text-align: center;
+    border: 1px solid #60a5fa30;
+    border-radius: 22px;
+    background: linear-gradient(110deg, #1d4ed822, #7c3aed22);
+}
+
+.cta h2 {
+    font-size: clamp(25px, 4vw, 36px);
+    margin-bottom: 15px;
+}
+
+.cta p {
+    color: #a7b4ca;
+    margin-bottom: 25px;
+    line-height: 1.7;
+}
+
+footer {
+    position: relative;
+    z-index: 1;
+    padding: 28px 20px;
+    text-align: center;
+    border-top: 1px solid #ffffff12;
+    color: #64748b;
+    font-size: 12px;
+}
+
+@media (max-width: 850px) {
+    .hero {
+        grid-template-columns: 1fr;
+        padding-top: 55px;
+        gap: 45px;
+    }
+
+    .visual {
+        max-width: 550px;
+        width: 100%;
+        margin: auto;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cta {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+}
+
+@media (max-width: 500px) {
+    nav {
+        padding: 20px;
+    }
+
+    nav .links {
+        gap: 14px;
+    }
+
+    nav .links a:first-child {
+        display: none;
+    }
+
+    .logo {
+        font-size: 21px;
+    }
+
+    .hero {
+        padding: 45px 22px;
+    }
+
+    h1 {
+        letter-spacing: -1.5px;
+    }
+
+    .description {
+        font-size: 15px;
+    }
+
+    .visual {
+        padding: 16px;
+    }
+
+    .features {
+        padding: 55px 22px;
+    }
+
+    .feature-card {
+        padding: 23px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo"><span class="logo-icon">⬡</span>Trust<span>Vault</span></div>
+
+    <div class="links">
+        <a href="#features">Features</a>
+        <a href="#security">Security</a>
+        <a href="/login" class="nav-btn">Sign In ↗</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <div>
+        <div class="eyebrow">
+            <span class="dot"></span>
+            SMARTER DOCUMENT SECURITY
+        </div>
+
+        <h1>
+            Your files.<br>
+            Your rules.<br>
+            <span class="gradient-text">Your trust.</span>
+        </h1>
+
+        <p class="description">
+            Take control of your digital documents. Share securely,
+            manage permissions, revoke access when needed, and keep
+            track of important activity — all in one place.
+        </p>
+
+        <div class="actions">
+            <a href="/login" class="primary-btn">
+                Get Started <span>→</span>
+            </a>
+
+            <a href="#features" class="secondary-btn">
+                Explore features ↓
+            </a>
+        </div>
+
+        <div class="trust-note">
+            ◈ Designed for secure document sharing and accountability
+        </div>
+    </div>
+
+    <div class="visual" id="security">
+        <div class="visual-header">
+            <h3>TrustVault Overview</h3>
+            <span class="status">● Security focused</span>
+        </div>
+
+        <div class="shield-area">
+            <div class="shield">🛡️</div>
+            <h2>Your documents, protected.</h2>
+            <p>Manage access. Share with confidence.</p>
+        </div>
+
+        <div class="doc-row">
+            <div class="file-icon">📄</div>
+            <div class="doc-info">
+                <strong>Project_Proposal.pdf</strong>
+                <small>Document · Access controlled</small>
+            </div>
+            <span class="lock">🔒</span>
+        </div>
+
+        <div class="doc-row">
+            <div class="file-icon">📋</div>
+            <div class="doc-info">
+                <strong>Activity History</strong>
+                <small>Audit trail feature</small>
+            </div>
+            <span class="lock">✓</span>
+        </div>
+    </div>
+</section>
+
+<section class="features" id="features">
+    <div class="section-heading">
+        <span class="label">Built around your trust</span>
+        <h2>Everything under control.</h2>
+        <p>Simple tools to help protect and manage your documents.</p>
+    </div>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <h3>Secure Document Sharing</h3>
+            <p>Build a controlled way to share documents with authorized users.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">👥</div>
+            <h3>Smart Access Control</h3>
+            <p>Manage permissions and support revoking document access.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Real Audit Trail</h3>
+            <p>Record important events so document activity can be reviewed.</p>
+        </div>
+    </div>
+</section>
+
+<section class="cta">
+    <h2>Your documents deserve better protection.</h2>
+    <p>Start managing your document access with TrustVault.</p>
+    <a href="/login" class="primary-btn">Enter TrustVault →</a>
+</section>
+
+<footer>
+    © 2026 TrustVault. Your documents. Your control.
+</footer>
+
+</body>
+</html>

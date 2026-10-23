@@ -1,0 +1,441 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrustVault | Create Account</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    min-height: 100vh;
+    background: #080d1c;
+    color: #f8fafc;
+}
+
+.page {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.brand-panel {
+    padding: 42px 9%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background:
+        radial-gradient(circle at 20% 30%, #2563eb45, transparent 42%),
+        radial-gradient(circle at 85% 85%, #7c3aed30, transparent 38%),
+        #0d1528;
+    border-right: 1px solid #ffffff12;
+}
+
+.logo {
+    font-size: 27px;
+    font-weight: 800;
+    letter-spacing: -.8px;
+}
+
+.logo span {
+    color: #60a5fa;
+}
+
+.brand-content {
+    max-width: 490px;
+    padding: 40px 0;
+}
+
+.eyebrow {
+    display: inline-block;
+    padding: 9px 13px;
+    margin-bottom: 25px;
+    color: #93c5fd;
+    background: #2563eb20;
+    border: 1px solid #60a5fa40;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+}
+
+h1 {
+    font-size: clamp(38px, 4.3vw, 59px);
+    line-height: 1.13;
+    letter-spacing: -2px;
+    margin-bottom: 22px;
+}
+
+.gradient {
+    background: linear-gradient(90deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.brand-content > p {
+    color: #a7b4ca;
+    font-size: 15px;
+    line-height: 1.9;
+}
+
+.benefits {
+    margin-top: 32px;
+    display: grid;
+    gap: 16px;
+}
+
+.benefit {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    color: #dbeafe;
+    font-size: 14px;
+}
+
+.benefit-icon {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    background: #ffffff0c;
+    border: 1px solid #ffffff16;
+    border-radius: 11px;
+}
+
+.brand-footer {
+    color: #718096;
+    font-size: 12px;
+}
+
+.form-panel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 35px 24px;
+    background:
+        radial-gradient(circle at 90% 10%, #4338ca20, transparent 35%),
+        #080d1c;
+}
+
+.register-card {
+    width: 100%;
+    max-width: 440px;
+    padding: 32px 38px;
+    background: linear-gradient(145deg, #182238e8, #111827ed);
+    border: 1px solid #ffffff19;
+    border-radius: 23px;
+    box-shadow: 0 25px 80px #00000045;
+}
+
+.mobile-logo {
+    display: none;
+    margin-bottom: 28px;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.card-icon {
+    width: 55px;
+    height: 55px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    box-shadow: 0 8px 25px #4f46e540;
+    font-size: 26px;
+    margin-bottom: 22px;
+}
+
+.register-card h2 {
+    font-size: 30px;
+    letter-spacing: -.7px;
+    margin-bottom: 9px;
+}
+
+.subtitle {
+    color: #94a3b8;
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 24px;
+}
+
+label {
+    display: block;
+    color: #e2e8f0;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 9px;
+}
+
+.input-wrap {
+    position: relative;
+    margin-bottom: 17px;
+}
+
+input {
+    width: 100%;
+    padding: 14px 15px;
+    border: 1px solid #334155;
+    background: #0b1220;
+    color: white;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    transition: .25s;
+}
+
+input::placeholder {
+    color: #64748b;
+}
+
+input:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px #3b82f620;
+}
+
+.password-input {
+    padding-right: 65px;
+}
+
+.show-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    color: #93c5fd;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.submit-btn {
+    width: 100%;
+    margin-top: 7px;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(100deg, #2563eb, #7c3aed);
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 25px #4f46e530;
+    transition: .25s;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px #4f46e550;
+}
+
+.signin {
+    margin-top: 22px;
+    text-align: center;
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+.signin a {
+    color: #93c5fd;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.signin a:hover {
+    text-decoration: underline;
+}
+
+.security-note {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid #ffffff12;
+    color: #94a3b8;
+    font-size: 11px;
+    line-height: 1.8;
+    text-align: center;
+}
+
+.security-note span {
+    color: #86efac;
+}
+
+@media (max-width: 850px) {
+    .page {
+        grid-template-columns: 1fr;
+    }
+
+    .brand-panel {
+        display: none;
+    }
+
+    .form-panel {
+        min-height: 100vh;
+        padding: 25px 18px;
+    }
+
+    .register-card {
+        max-width: 450px;
+    }
+
+    .mobile-logo {
+        display: block;
+    }
+}
+
+@media (max-width: 420px) {
+    .register-card {
+        padding: 28px 22px;
+    }
+
+    .register-card h2 {
+        font-size: 26px;
+    }
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+    <section class="brand-panel">
+        <div class="logo">⬡ Trust<span>Vault</span></div>
+
+        <div class="brand-content">
+            <div class="eyebrow">YOUR DIGITAL SPACE, PROTECTED</div>
+
+            <h1>
+                Your security<br>
+                starts <span class="gradient">here.</span>
+            </h1>
+
+            <p>
+                Create your TrustVault account to organize your
+                documents, control access, and manage your
+                secure digital workspace.
+            </p>
+
+            <div class="benefits">
+                <div class="benefit">
+                    <div class="benefit-icon">🔐</div>
+                    <span>Secure account access</span>
+                </div>
+
+                <div class="benefit">
+                    <div class="benefit-icon">📁</div>
+                    <span>Keep important documents organized</span>
+                </div>
+
+                <div class="benefit">
+                    <div class="benefit-icon">🛡️</div>
+                    <span>Your documents. Your control.</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="brand-footer">
+            © 2026 TrustVault · Your documents. Your control.
+        </div>
+    </section>
+
+    <section class="form-panel">
+        <div class="register-card">
+
+            <div class="mobile-logo">
+                ⬡ Trust<span class="gradient">Vault</span>
+            </div>
+
+            <div class="card-icon">✦</div>
+
+            <h2>Create account</h2>
+            <p class="subtitle">
+                Join TrustVault and create your secure workspace.
+            </p>
+            <div th:if="${error}"
+     style="color: #ff6b6b; margin-bottom: 15px; text-align: center;">
+    <span th:text="${error}"></span>
+</div>
+            <form action="/register" method="post">
+                <label for="name">Full name</label>
+                <div class="input-wrap">
+                    <input type="text"
+                           id="name"
+                           name="name"
+                           placeholder="Enter your full name"
+                           autocomplete="name"
+                           required>
+                </div>
+
+                <label for="email">Email address</label>
+                <div class="input-wrap">
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           placeholder="you@example.com"
+                           autocomplete="email"
+                           required>
+                </div>
+
+                <label for="password">Password</label>
+                <div class="input-wrap">
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           class="password-input"
+                           placeholder="Create a password"
+                           autocomplete="new-password"
+                           minlength="8"
+                           required>
+
+                    <button type="button"
+                            class="show-password"
+                            onclick="togglePassword()">
+                        Show
+                    </button>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    Create Account &nbsp; →
+                </button>
+            </form>
+
+            <p class="signin">
+                Already have an account? <a href="/login">Sign In</a>
+            </p>
+
+            <div class="security-note">
+                <span>●</span> Designed for secure access<br>
+                TrustVault · Document sharing with an audit trail
+            </div>
+
+        </div>
+    </section>
+
+</div>
+
+<script>
+function togglePassword() {
+    const password = document.getElementById("password");
+    const button = document.querySelector(".show-password");
+
+    if (password.type === "password") {
+        password.type = "text";
+        button.textContent = "Hide";
+    } else {
+        password.type = "password";
+        button.textContent = "Show";
+    }
+}
+</script>
+
+</body>
+</html>
