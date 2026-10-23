@@ -1,10 +1,24 @@
+
 HELP.md
 target/
+data/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### STS ###
+# Java
+*.class
+*.jar
+*.war
+*.nar
+*.ear
+
+# Logs
+*.log
+hs_err_pid*
+replay_pid*
+
+# IDE files
 .apt_generated
 .classpath
 .factorypath
@@ -12,14 +26,10 @@ target/
 .settings
 .springBeans
 .sts4-cache
-
-### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
-
-### NetBeans ###
 /nbproject/private/
 /nbbuild/
 /dist/
@@ -28,8 +38,11 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
-
-### VS Code ###
 .vscode/
 
-data/
+# Other
+*.ctxt
+.mtj.tmp/
+*.zip
+*.tar.gz
+*.rar
