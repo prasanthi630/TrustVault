@@ -1,10 +1,14 @@
 
 package com.trustvault.controller;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+
 import org.springframework.ui.Model;
 
 import com.trustvault.repository.DocumentRepository;
@@ -15,6 +19,8 @@ import com.trustvault.entity.AppUser;
 import com.trustvault.service.AppUserService;
 import com.trustvault.service.DocumentShareService;
 
+import com.trustvault.model.Document;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -22,8 +28,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class PageController {
 
     private final DocumentRepository documentRepository;
+
     private final AuditLogRepository auditLogRepository;
+
     private final AppUserService appUserService;
+
     private final DocumentShareService documentShareService;
 
     public PageController(
@@ -39,85 +48,89 @@ public class PageController {
     }
 
     // Home page
-
     @GetMapping("/")
     public String home() {
+
         return "home";
     }
 
+    // Home page
     @GetMapping("/home")
     public String homePage() {
+
         return "home";
     }
 
     // Dashboard
+    @GetMapping("/dashboard")
+    public String dashboard(
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model) {
 
+        String username = userDetails.getUsername();
 
+        // Get current user
+        AppUser user =
+                appUserService.findByEmail(username);
 
-@GetMapping("/dashboard")
-public String dashboard(
-        @AuthenticationPrincipal UserDetails userDetails,
-        Model model) {
+        // Get current user's documents
+        List<Document> documents =
+                documentRepository.findByOwnerEmail(username);
 
-    AppUser user =
-            appUserService.findByEmail(userDetails.getUsername());
+        // Get current user's audit logs
+        var auditLogs =
+                auditLogRepository.findByUsername(username);
 
-    String username = userDetails.getUsername();
+        // User name
+        model.addAttribute(
+                "name",
+                user.getName());
 
-    // User name
-    model.addAttribute("name", user.getName());
+        // User's documents
+        model.addAttribute(
+                "documents",
+                documents);
 
-    // Current user's documents
-    model.addAttribute(
-            "documents",
-            documentRepository.findByOwnerEmail(username)
-    );
+        // Total documents
+        model.addAttribute(
+                "totalDocuments",
+                documents.size());
 
-    // Current user's total documents
-    model.addAttribute(
-            "totalDocuments",
-            documentRepository.findByOwnerEmail(username).size()
-    );
+        // User's audit logs
+        model.addAttribute(
+                "auditLogs",
+                auditLogs);
 
-    // Current user's audit logs
-    model.addAttribute(
-            "auditLogs",
-            auditLogRepository.findByUsername(username)
-    );
+        // Total audit events
+        model.addAttribute(
+                "totalAuditEvents",
+                auditLogs.size());
 
-    // Current user's total audit events
-    model.addAttribute(
-            "totalAuditEvents",
-            auditLogRepository.findByUsername(username).size()
-    );
+        // Documents shared by current user
+        model.addAttribute(
+                "sharedDocumentsCount",
+                documentShareService
+                        .getSharedByUser(username)
+                        .size());
 
-    // Documents shared by current user
-    model.addAttribute(
-            "sharedDocumentsCount",
-            documentShareService
-                    .getSharedByUser(username)
-                    .size()
-    );
-
-    return "dashboard";
-}
+        return "dashboard";
+    }
 
     // Login page
-
     @GetMapping("/login")
     public String login() {
+
         return "login";
     }
 
     // Registration page
-
     @GetMapping("/register")
     public String register() {
+
         return "register";
     }
 
     // Register user
-
     @PostMapping("/register")
     public String registerUser(
             @ModelAttribute AppUser user,
@@ -129,18 +142,17 @@ public String dashboard(
 
             return "redirect:/login?registered";
 
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException exception) {
 
             model.addAttribute(
                     "error",
-                    e.getMessage()
-            );
+                    exception.getMessage());
 
             return "register";
         }
     }
 
-    
+    // Documents page
     @GetMapping("/documents")
     public String documents(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -148,13 +160,14 @@ public String dashboard(
 
         String username = userDetails.getUsername();
 
+        // Get only current user's documents
+        List<Document> documents =
+                documentRepository.findByOwnerEmail(username);
+
         model.addAttribute(
                 "documents",
-                documentRepository.findByOwnerEmail(username)
-        );
+                documents);
 
         return "documents";
     }
-
-
 }

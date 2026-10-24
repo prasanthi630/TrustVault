@@ -32,12 +32,13 @@ public class SecurityConfig {
                                     "User not found"
                             ));
 
-            UserDetails user = org.springframework.security.core.userdetails.User
-                    .builder()
-                    .username(appUser.getEmail())
-                    .password(appUser.getPassword())
-                    .roles("USER")
-                    .build();
+            UserDetails user =
+                    org.springframework.security.core.userdetails.User
+                            .builder()
+                            .username(appUser.getEmail())
+                            .password(appUser.getPassword())
+                            .roles("USER")
+                            .build();
 
             return user;
         };
@@ -90,7 +91,9 @@ public class SecurityConfig {
             // Login configuration
             .formLogin(form -> form
                     .loginPage("/login")
+                    .loginProcessingUrl("/login")
                     .defaultSuccessUrl("/dashboard", true)
+                    .failureUrl("/login?error")
                     .permitAll()
             )
 
