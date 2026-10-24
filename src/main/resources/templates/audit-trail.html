@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>TrustVault | Audit Trail</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #38bdf8;
+        }
+
+        p {
+            color: #94a3b8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            background: #1e293b;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+
+        th {
+            background: #334155;
+            color: #38bdf8;
+        }
+
+        tr:hover {
+            background: #293548;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 12px 20px;
+            background: #0284c7;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .empty {
+            text-align: center;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>TrustVault Audit Trail</h1>
+
+    <p>Track document activities and access history.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Action</th>
+                <th>Document</th>
+                <th>Date & Time</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr th:each="log : ${auditLogs}">
+                <td th:text="${log.id}"></td>
+                <td th:text="${log.username}"></td>
+                <td th:text="${log.action}"></td>
+                <td th:text="${log.documentName}"></td>
+                <td th:text="${log.timestamp}"></td>
+            </tr>
+
+            <tr th:if="${#lists.isEmpty(auditLogs)}">
+                <td colspan="5" class="empty">
+                    No audit records available.
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+
+    <a href="/dashboard" class="back">Back to Dashboard</a>
+
+</div>
+
+</body>
+</html>

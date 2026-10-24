@@ -23,6 +23,9 @@ public class Document {
 
     private String storagePath;
 
+    // Document owner email
+    private String ownerEmail;
+
     public Document() {
     }
 
@@ -60,5 +63,13 @@ public class Document {
 
     public void setStoragePath(String storagePath) {
         this.storagePath = storagePath;
+    }
+
+    public String getOwnerEmail() {
+        return ownerEmail;
+    }
+
+    public void setOwnerEmail(String ownerEmail) {
+        this.ownerEmail = ownerEmail;
     }
 }

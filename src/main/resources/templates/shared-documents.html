@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Shared Access | TrustVault</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b1020;
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+
+        .sidebar {
+            width: 245px;
+            background: #10172b;
+            border-right: 1px solid #26314a;
+            padding: 30px 20px;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 45px;
+        }
+
+        .logo span {
+            color: #818cf8;
+        }
+
+        .nav a {
+            display: block;
+            color: #a6b1c8;
+            text-decoration: none;
+            padding: 14px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            background: #252d4b;
+            color: white;
+        }
+
+        /* Main */
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 35px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .muted {
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+
+        .top-badge {
+            background: #1e2540;
+            border: 1px solid #353f61;
+            color: #a5b4fc;
+            padding: 10px 16px;
+            border-radius: 25px;
+            font-size: 13px;
+        }
+
+        /* Statistics */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #141c31;
+            border: 1px solid #27334d;
+            border-radius: 16px;
+            padding: 23px;
+        }
+
+        .stat-icon {
+            font-size: 25px;
+            margin-bottom: 15px;
+        }
+
+        .stat-number {
+            font-size: 29px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        /* Share form */
+
+        .share-card {
+            background: linear-gradient(135deg, #171f39, #141c31);
+            border: 1px solid #303c56;
+            border-radius: 18px;
+            padding: 28px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 9px;
+        }
+
+        .section-description {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .share-form {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        label {
+            color: #cbd5e1;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .form-control {
+            width: 100%;
+            background: #0b1020;
+            border: 1px solid #303c56;
+            border-radius: 10px;
+            padding: 14px;
+            color: white;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.12);
+        }
+
+        .form-control option {
+            background: #141c31;
+            color: white;
+        }
+
+        .share-button {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            border-radius: 10px;
+            padding: 14px 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .share-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+        }
+
+        /* Messages */
+
+        .message {
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .success {
+            color: #6ee7b7;
+            background: #123b32;
+            border: 1px solid #236451;
+        }
+
+        .error {
+            color: #fda4af;
+            background: #3b1d2b;
+            border: 1px solid #713047;
+        }
+
+        /* Document sections */
+
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .documents-card {
+            background: #141c31;
+            border: 1px solid #27334d;
+            border-radius: 18px;
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .documents-heading {
+            padding: 23px;
+            border-bottom: 1px solid #27334d;
+        }
+
+        .heading-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .heading-icon {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #252d4b;
+            border-radius: 12px;
+            font-size: 20px;
+        }
+
+        .count-badge {
+            background: #252d4b;
+            color: #a5b4fc;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: auto;
+        }
+
+        /* Share rows */
+
+        .share-list {
+            padding: 8px 18px;
+        }
+
+        .share-item {
+            padding: 18px 5px;
+            border-bottom: 1px solid #27334d;
+        }
+
+        .share-item:last-child {
+            border-bottom: none;
+        }
+
+        .share-item-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .file-icon {
+            width: 42px;
+            height: 42px;
+            background: #252d4b;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            flex-shrink: 0;
+        }
+
+        .share-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .share-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 7px;
+            overflow-wrap: anywhere;
+        }
+
+        .share-subtitle {
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .permission-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .permission {
+            display: inline-block;
+            padding: 6px 11px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .view-permission {
+            color: #93c5fd;
+            background: #172e4a;
+        }
+
+        .download-permission {
+            color: #c4b5fd;
+            background: #30244d;
+        }
+
+        .date-text {
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        /* Revoke */
+
+        .revoke-form {
+            margin-top: 15px;
+        }
+
+        .revoke-button {
+            background: #3b1d2b;
+            border: 1px solid #713047;
+            color: #fda4af;
+            padding: 9px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .revoke-button:hover {
+            background: #572536;
+        }
+
+        /* Empty state */
+
+        .empty {
+            padding: 35px 20px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 35px;
+            margin-bottom: 15px;
+        }
+
+        .empty h3 {
+            font-size: 16px;
+            margin-bottom: 9px;
+        }
+
+        .empty p {
+            color: #94a3b8;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* Security note */
+
+        .security-note {
+            margin-top: 25px;
+            padding: 17px;
+            background: #171f39;
+            border: 1px solid #303c56;
+            border-radius: 12px;
+            color: #c7d2fe;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 1100px) {
+            .share-form {
+                grid-template-columns: 1fr;
+            }
+
+            .documents-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .sidebar {
+                width: 180px;
+                padding: 25px 12px;
+            }
+
+            .main {
+                padding: 22px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 18px;
+            }
+
+            .logo {
+                margin-bottom: 18px;
+            }
+
+            .nav {
+                display: flex;
+                gap: 5px;
+                flex-wrap: wrap;
+            }
+
+            .nav a {
+                padding: 10px;
+                margin-bottom: 0;
+                font-size: 13px;
+            }
+
+            .main {
+                padding: 20px 14px;
+            }
+
+            h1 {
+                font-size: 25px;
+            }
+
+            .share-card {
+                padding: 20px;
+            }
+
+            .documents-heading {
+                padding: 18px;
+            }
+
+            .share-list {
+                padding: 8px 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            Trust<span>Vault</span>
+        </div>
+
+        <nav class="nav">
+
+            <a href="/dashboard">
+                ▦ &nbsp; Dashboard
+            </a>
+
+            <a href="/documents">
+                ▤ &nbsp; Documents
+            </a>
+
+            <a href="/shared-documents" class="active">
+                🔗 &nbsp; Shared Access
+            </a>
+
+            <a href="/audit-trail">
+                ◷ &nbsp; Audit Trail
+            </a>
+
+            <a href="/logout">
+                ⇥ &nbsp; Sign Out
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <!-- Main -->
+
+    <main class="main">
+
+        <!-- Header -->
+
+        <div class="topbar">
+
+            <div>
+                <h1>Shared Access</h1>
+
+                <p class="muted">
+                    Share your documents securely and manage access permissions.
+                </p>
+            </div>
+
+            <div class="top-badge">
+                🔒 Secure Document Sharing
+            </div>
+
+        </div>
+
+        <!-- Messages -->
+
+        <div th:if="${message != null}"
+             class="message success"
+             th:text="${message}">
+        </div>
+
+        <div th:if="${error != null}"
+             class="message error"
+             th:text="${error}">
+        </div>
+
+        <!-- Statistics -->
+
+        <section class="stats">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">📤</div>
+
+                <div class="stat-number"
+                     th:text="${myShares != null ? #lists.size(myShares) : 0}">
+                    0
+                </div>
+
+                <p class="muted">
+                    Documents Shared By Me
+                </p>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="stat-icon">📥</div>
+
+                <div class="stat-number"
+                     th:text="${sharedDocuments != null ? #lists.size(sharedDocuments) : 0}">
+                    0
+                </div>
+
+                <p class="muted">
+                    Documents Shared With Me
+                </p>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div class="stat-icon">🛡️</div>
+
+                <div class="stat-number">
+                    Protected
+                </div>
+
+                <p class="muted">
+                    Access Management
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- Share document form -->
+
+        <section class="share-card">
+
+            <h2 class="section-title">
+                🔗 Share a Document
+            </h2>
+
+            <p class="section-description">
+                Enter a document ID, recipient email, and permission
+                to create a sharing record.
+            </p>
+
+            <form th:action="@{/share-document}"
+                  method="post"
+                  class="share-form">
+
+                <div class="form-group">
+
+                    <label for="documentId">
+                        Document ID
+                    </label>
+
+                    <input type="number"
+                           id="documentId"
+                           name="documentId"
+                           class="form-control"
+                           placeholder="Enter document ID"
+                           min="1"
+                           required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="sharedWith">
+                        Recipient Email
+                    </label>
+
+                    <input type="email"
+                           id="sharedWith"
+                           name="sharedWith"
+                           class="form-control"
+                           placeholder="recipient@example.com"
+                           required>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="permission">
+                        Permission
+                    </label>
+
+                    <select id="permission"
+                            name="permission"
+                            class="form-control"
+                            required>
+
+                        <option value="VIEW">
+                            View
+                        </option>
+
+                        <option value="DOWNLOAD">
+                            Download
+                        </option>
+
+                    </select>
+
+                    <button type="submit"
+                            class="share-button">
+                        + Share Document
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+        <!-- Documents lists -->
+
+        <section class="documents-grid">
+
+            <!-- Shared with me -->
+
+            <div class="documents-card">
+
+                <div class="documents-heading">
+
+                    <div class="heading-row">
+
+                        <div class="heading-icon">
+                            📥
+                        </div>
+
+                        <h2 class="section-title">
+                            Shared With Me
+                        </h2>
+
+                        <span class="count-badge"
+                              th:text="${sharedDocuments != null ? #lists.size(sharedDocuments) : 0}">
+                            0
+                        </span>
+
+                    </div>
+
+                    <p class="muted">
+                        Documents shared with your account.
+                    </p>
+
+                </div>
+
+                <div class="share-list">
+
+                    <div th:if="${sharedDocuments != null and !#lists.isEmpty(sharedDocuments)}">
+
+                        <div class="share-item"
+                             th:each="share : ${sharedDocuments}">
+
+                            <div class="share-item-top">
+
+                                <div class="file-icon">
+                                    📄
+                                </div>
+
+                                <div class="share-info">
+
+                                    <div class="share-title">
+
+                                        Document ID:
+                                        <span th:text="${share.documentId}">
+                                            1
+                                        </span>
+
+                                    </div>
+
+                                    <div class="share-subtitle">
+
+                                        Shared by:
+
+                                        <span th:text="${share.sharedBy}">
+                                            user@example.com
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="permission-row">
+
+                                <span class="permission"
+                                      th:classappend="${share.permission == 'DOWNLOAD'} ? ' download-permission' : ' view-permission'"
+                                      th:text="${share.permission}">
+                                    VIEW
+                                </span>
+
+                                <span class="date-text"
+                                      th:text="${share.sharedAt}">
+                                    Shared date
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div th:if="${sharedDocuments == null or #lists.isEmpty(sharedDocuments)}">
+
+                        <div class="empty">
+
+                            <div class="empty-icon">
+                                📂
+                            </div>
+
+                            <h3>No shared documents</h3>
+
+                            <p>
+                                Documents shared with you will appear here.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Shared by me -->
+
+            <div class="documents-card">
+
+                <div class="documents-heading">
+
+                    <div class="heading-row">
+
+                        <div class="heading-icon">
+                            📤
+                        </div>
+
+                        <h2 class="section-title">
+                            Shared By Me
+                        </h2>
+
+                        <span class="count-badge"
+                              th:text="${myShares != null ? #lists.size(myShares) : 0}">
+                            0
+                        </span>
+
+                    </div>
+
+                    <p class="muted">
+                        Manage documents you have shared.
+                    </p>
+
+                </div>
+
+                <div class="share-list">
+
+                    <div th:if="${myShares != null and !#lists.isEmpty(myShares)}">
+
+                        <div class="share-item"
+                             th:each="share : ${myShares}">
+
+                            <div class="share-item-top">
+
+                                <div class="file-icon">
+                                    📄
+                                </div>
+
+                                <div class="share-info">
+
+                                    <div class="share-title">
+
+                                        Document ID:
+
+                                        <span th:text="${share.documentId}">
+                                            1
+                                        </span>
+
+                                    </div>
+
+                                    <div class="share-subtitle">
+
+                                        Shared with:
+
+                                        <span th:text="${share.sharedWith}">
+                                            recipient@example.com
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="permission-row">
+
+                                <span class="permission"
+                                      th:classappend="${share.permission == 'DOWNLOAD'} ? ' download-permission' : ' view-permission'"
+                                      th:text="${share.permission}">
+                                    VIEW
+                                </span>
+
+                                <span class="date-text"
+                                      th:text="${share.sharedAt}">
+                                    Shared date
+                                </span>
+
+                            </div>
+
+                            <!-- Revoke -->
+
+                            <form th:action="@{/revoke-share}"
+                                  method="post"
+                                  class="revoke-form"
+                                  onsubmit="return confirm('Are you sure you want to revoke this share?');">
+
+                                <input type="hidden"
+                                       name="shareId"
+                                       th:value="${share.id}">
+
+                                <button type="submit"
+                                        class="revoke-button">
+                                    Revoke Access
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                    <div th:if="${myShares == null or #lists.isEmpty(myShares)}">
+
+                        <div class="empty">
+
+                            <div class="empty-icon">
+                                🔗
+                            </div>
+
+                            <h3>No shared documents</h3>
+
+                            <p>
+                                Documents you share will appear here.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Security note -->
+
+        <div class="security-note">
+
+            🛡️ <strong>Security reminder:</strong>
+
+            Sharing records show the selected recipient and permission.
+            Make sure document ownership, recipient verification,
+            permission checks, and secure download authorization are
+            enforced on the server before sharing sensitive files.
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

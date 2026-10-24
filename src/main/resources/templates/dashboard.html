@@ -1,12 +1,15 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>TrustVault | Dashboard</title>
 
 <style>
+
 * {
     margin: 0;
     padding: 0;
@@ -23,6 +26,8 @@ body {
     display: flex;
     min-height: 100vh;
 }
+
+/* SIDEBAR */
 
 .sidebar {
     width: 250px;
@@ -51,7 +56,7 @@ body {
     margin: 0 12px 15px;
 }
 
-.sidebar a {
+.sidebar nav a {
     display: block;
     color: #a7b4ca;
     text-decoration: none;
@@ -62,8 +67,8 @@ body {
     transition: .2s;
 }
 
-.sidebar a:hover,
-.sidebar a.active {
+.sidebar nav a:hover,
+.sidebar nav a.active {
     background: #2563eb25;
     color: #93c5fd;
 }
@@ -81,10 +86,14 @@ body {
     line-height: 1.8;
 }
 
+/* MAIN */
+
 .main {
     flex: 1;
     min-width: 0;
 }
+
+/* TOPBAR */
 
 .topbar {
     min-height: 85px;
@@ -116,6 +125,8 @@ body {
     font-weight: bold;
 }
 
+/* CONTENT */
+
 .content {
     padding: 35px;
     max-width: 1500px;
@@ -130,7 +141,8 @@ body {
     margin-bottom: 30px;
 }
 
-.welcome h1 {
+.welcome h1,
+.welcome h2 {
     font-size: clamp(25px, 3vw, 34px);
     margin-bottom: 10px;
 }
@@ -141,7 +153,10 @@ body {
     font-size: 14px;
 }
 
+/* BUTTONS */
+
 .primary-btn {
+    display: inline-block;
     background: linear-gradient(100deg, #2563eb, #7c3aed);
     color: white;
     text-decoration: none;
@@ -153,6 +168,12 @@ body {
     border: none;
     cursor: pointer;
 }
+
+.primary-btn:hover {
+    opacity: .85;
+}
+
+/* STATISTICS */
 
 .stats {
     display: grid;
@@ -196,9 +217,13 @@ body {
 }
 
 .stat-card small {
+    display: block;
     color: #64748b;
     font-size: 11px;
+    margin-top: 8px;
 }
+
+/* COLUMNS */
 
 .columns {
     display: grid;
@@ -232,6 +257,8 @@ body {
     font-size: 12px;
     text-decoration: none;
 }
+
+/* DOCUMENTS */
 
 .document {
     display: flex;
@@ -282,6 +309,14 @@ body {
     white-space: nowrap;
 }
 
+.empty-message {
+    color: #94a3b8;
+    font-size: 13px;
+    padding: 15px 0;
+}
+
+/* ACTIVITY */
+
 .activity {
     display: flex;
     gap: 12px;
@@ -312,6 +347,8 @@ body {
     color: #64748b;
     font-size: 10px;
 }
+
+/* SECURITY */
 
 .security-card {
     background: linear-gradient(135deg, #172554, #312e81);
@@ -346,6 +383,22 @@ body {
     font-size: 10px;
 }
 
+/* LINKS */
+
+.content-link {
+    display: inline-block;
+    margin-top: 12px;
+    color: #93c5fd;
+    text-decoration: none;
+    font-size: 12px;
+}
+
+.content-link:hover {
+    color: #bfdbfe;
+}
+
+/* FOOTER */
+
 footer {
     text-align: center;
     color: #64748b;
@@ -353,7 +406,10 @@ footer {
     padding: 22px;
 }
 
+/* RESPONSIVE */
+
 @media (max-width: 1050px) {
+
     .sidebar {
         width: 210px;
     }
@@ -364,6 +420,7 @@ footer {
 }
 
 @media (max-width: 700px) {
+
     .layout {
         display: block;
     }
@@ -388,7 +445,7 @@ footer {
         overflow-x: auto;
     }
 
-    .sidebar a {
+    .sidebar nav a {
         white-space: nowrap;
         margin: 0;
         padding: 10px;
@@ -424,176 +481,536 @@ footer {
         padding: 18px;
     }
 }
+
 </style>
 </head>
 
 <body>
+
 <div class="layout">
 
+    <!-- SIDEBAR -->
+
     <aside class="sidebar">
-        <div class="logo">⬡ Trust<span>Vault</span></div>
+
+        <div class="logo">
+            ⬡ Trust<span>Vault</span>
+        </div>
 
         <div class="nav-label">WORKSPACE</div>
 
         <nav>
-            <a href="/dashboard" class="active">▦ &nbsp; Dashboard</a>
-            <a href="/documents">▤ &nbsp; My Documents</a>
-            <a href="/documents">⇄ &nbsp; Shared Access</a>
+
+            <a href="/dashboard" class="active">
+                ▦ &nbsp; Dashboard
+            </a>
+
+            <a href="/documents">
+                ▤ &nbsp; My Documents
+            </a>
+
+            <a href="/shared-documents">
+                ⇄ &nbsp; Shared Access
+            </a>
+
+            <a href="/audit-trail">
+                📋 &nbsp; Audit Trail
+            </a>
+
         </nav>
 
         <div class="bottom">
+
             <div class="nav-label">ACCOUNT</div>
+
             <form action="/logout" method="post">
-    <button type="submit" class="primary-btn">
-        ↪ Logout
-    </button>
-</form>
+
+                <button type="submit" class="primary-btn">
+                    ↪ Logout
+                </button>
+
+            </form>
+
         </div>
 
         <div class="profile">
+
             <strong>TrustVault</strong><br>
+
             Secure document workspace
+
         </div>
+
     </aside>
 
+
+    <!-- MAIN -->
+
     <main class="main">
+
+        <!-- TOPBAR -->
+
         <header class="topbar">
+
             <div>
+
                 <h2>Dashboard</h2>
+
                 <p>Your secure document workspace</p>
+
             </div>
+
             <div class="user-badge">TV</div>
+
         </header>
 
+
+        <!-- CONTENT -->
+
         <div class="content">
+
+            <!-- WELCOME -->
+
             <section class="welcome">
+
                 <div>
-                    <h2>Welcome, <span th:text="${name}"></span>!</h2>
-                    <p>Manage your documents, sharing permissions, and activity.</p>
+
+                    <h2>
+                        Welcome,
+                        <span th:text="${name}">User</span>!
+                    </h2>
+
+                    <p>
+                        Manage your documents, sharing permissions,
+                        and activity.
+                    </p>
+
                 </div>
 
-                <a href="/documents" class="primary-btn">＋ Manage Documents</a>
+                <a href="/documents" class="primary-btn">
+                    ＋ Manage Documents
+                </a>
+
             </section>
+
+
+            <!-- STATISTICS -->
 
             <section class="stats">
+
+                <!-- TOTAL DOCUMENTS -->
+
                 <div class="stat-card">
+
                     <div class="stat-top">
+
                         <div class="stat-icon">📄</div>
+
                     </div>
+
                     <p>Total Documents</p>
-                    <h2>0</h2>
+
+                    <h2 th:text="${totalDocuments}">0</h2>
+
                     <small>Your document library</small>
+
                 </div>
 
+
+                <!-- SHARED DOCUMENTS -->
+
                 <div class="stat-card">
+
                     <div class="stat-top">
+
                         <div class="stat-icon">🔗</div>
+
                     </div>
+
                     <p>Shared Documents</p>
-                    <h2>0</h2>
+
+                    <h2 th:text="${sharedDocumentsCount}">0</h2>
+
                     <small>Documents shared with others</small>
+
+                    <a href="/shared-documents"
+                       class="content-link">
+
+                        Manage Shared Documents →
+
+                    </a>
+
                 </div>
 
+
+                <!-- AUDIT EVENTS -->
+
                 <div class="stat-card">
+
                     <div class="stat-top">
+
                         <div class="stat-icon">📋</div>
+
                     </div>
+
                     <p>Audit Events</p>
-                    <h2>0</h2>
+
+                    <h2 th:text="${totalAuditEvents}">0</h2>
+
                     <small>Recorded activity events</small>
+
+                    <a href="/audit-trail"
+                       class="content-link">
+
+                        View Audit Trail →
+
+                    </a>
+
                 </div>
+
             </section>
 
+
+            <!-- DOCUMENTS AND ACTIVITY -->
+
             <div class="columns">
+
+
+                <!-- LEFT COLUMN -->
+
                 <section>
+
+
+                    <!-- RECENT DOCUMENTS -->
+
                     <div class="panel">
+
                         <div class="panel-header">
+
                             <h3>Recent Documents</h3>
-                            <a href="/documents">View all →</a>
+
+                            <a href="/documents">
+                                View all →
+                            </a>
+
                         </div>
 
-                        <div class="document">
-                            <div class="file-icon">📄</div>
-                            <div class="doc-info">
-                                <strong>Your documents will appear here</strong>
-                                <small>Upload a document to get started</small>
+
+                        <!-- DOCUMENT LIST -->
+
+                        <div th:if="${documents != null and !documents.isEmpty()}">
+
+                            <div class="document"
+                                 th:each="document : ${documents}">
+
+                                <div class="file-icon">📄</div>
+
+                                <div class="doc-info">
+
+                                    <strong
+                                        th:text="${document.fileName}">
+                                        Document Name
+                                    </strong>
+
+                                    <small>
+                                        Your secure document
+                                    </small>
+
+                                </div>
+
+                                <span class="status">
+                                    Stored
+                                </span>
+
                             </div>
+
                         </div>
 
-                        <a href="/documents" class="primary-btn"
-                           style="display:inline-block;margin-top:18px">
+
+                        <!-- EMPTY DOCUMENT LIST -->
+
+                        <div th:if="${documents == null or documents.isEmpty()}">
+
+                            <div class="empty-message">
+
+                                No documents uploaded yet.
+                                Upload a document to get started.
+
+                            </div>
+
+                        </div>
+
+
+                        <a href="/documents"
+                           class="primary-btn"
+                           style="margin-top:18px">
+
                             Open Document Manager →
+
                         </a>
+
                     </div>
+
+
+
+                    <!-- RECENT ACTIVITY -->
 
                     <div class="panel">
+
                         <div class="panel-header">
+
                             <h3>Recent Activity</h3>
-                            <span style="color:#64748b;font-size:11px">Audit trail</span>
+
+                            <a href="/audit-trail">
+                                View all →
+                            </a>
+
                         </div>
 
-                        <div class="activity">
-                            <div class="activity-icon">📋</div>
-                            <div>
-                                <p><strong>No activity recorded yet</strong></p>
-                                <small>Document events will appear here after backend integration.</small>
+
+                        <!-- ACTIVITY LIST -->
+
+                        <div th:if="${auditLogs != null and !auditLogs.isEmpty()}">
+
+                            <div class="activity"
+                                 th:each="log : ${auditLogs}">
+
+                                <div class="activity-icon">
+                                    📋
+                                </div>
+
+                                <div>
+
+                                    <p>
+
+                                        <strong
+                                            th:text="${log.action}">
+                                            Action
+                                        </strong>
+
+                                        -
+
+                                        <span
+                                            th:text="${log.documentName}">
+                                            Document
+                                        </span>
+
+                                    </p>
+
+                                    <small>
+
+                                        <span
+                                            th:text="${log.username}">
+                                            User
+                                        </span>
+
+                                        &nbsp;|&nbsp;
+
+                                        <span
+                                            th:text="${log.timestamp}">
+                                            Time
+                                        </span>
+
+                                    </small>
+
+                                </div>
+
                             </div>
+
                         </div>
+
+
+                        <!-- EMPTY ACTIVITY -->
+
+                        <div th:if="${auditLogs == null or auditLogs.isEmpty()}">
+
+                            <div class="empty-message">
+
+                                No activity recorded yet.
+
+                            </div>
+
+                        </div>
+
                     </div>
+
                 </section>
+
+
+
+                <!-- RIGHT COLUMN -->
 
                 <section>
+
+
+                    <!-- SECURITY -->
+
                     <div class="security-card">
+
                         <div class="shield">🛡️</div>
+
                         <h3>Security & Access</h3>
+
                         <p>
+
                             Manage who can access your documents.
-                            Review permissions and revoke access when required.
+                            Review permissions and revoke access
+                            when required.
+
                         </p>
-                        <div class="security-label">Access control workspace</div>
+
+                        <div class="security-label">
+
+                            Access control workspace
+
+                        </div>
+
                     </div>
 
-                    <div class="panel" style="margin-top:22px">
+
+
+                    <!-- QUICK ACTIONS -->
+
+                    <div class="panel"
+                         style="margin-top:22px">
+
                         <div class="panel-header">
+
                             <h3>Quick Actions</h3>
+
                         </div>
 
+
+                        <!-- DOCUMENTS -->
+
                         <div class="activity">
-                            <div class="activity-icon">📤</div>
+
+                            <div class="activity-icon">
+                                📤
+                            </div>
+
                             <div class="doc-info">
-                                <p><strong>Manage Documents</strong></p>
-                                <small>View your document workspace</small>
-                                <p style="margin-top:10px">
+
+                                <p>
+                                    <strong>
+                                        Manage Documents
+                                    </strong>
+                                </p>
+
+                                <small>
+                                    View your document workspace
+                                </small>
+
+                                <p>
+
                                     <a href="/documents"
-                                       style="color:#93c5fd;text-decoration:none">
+                                       class="content-link">
+
                                         Open documents →
+
                                     </a>
+
                                 </p>
+
                             </div>
+
                         </div>
 
+
+
+                        <!-- SHARED ACCESS -->
+
                         <div class="activity">
-                            <div class="activity-icon">🔐</div>
-                            <div class="doc-info">
-                                <p><strong>Review Access</strong></p>
-                                <small>Manage document permissions</small>
-                                <p style="margin-top:10px">
-                                    <a href="/documents"
-                                       style="color:#93c5fd;text-decoration:none">
-                                        Manage access →
-                                    </a>
-                                </p>
+
+                            <div class="activity-icon">
+                                🔐
                             </div>
+
+                            <div class="doc-info">
+
+                                <p>
+                                    <strong>
+                                        Review Access
+                                    </strong>
+                                </p>
+
+                                <small>
+                                    Manage document permissions
+                                </small>
+
+                                <p>
+
+                                    <a href="/shared-documents"
+                                       class="content-link">
+
+                                        Manage access →
+
+                                    </a>
+
+                                </p>
+
+                            </div>
+
                         </div>
+
+
+
+                        <!-- AUDIT TRAIL -->
+
+                        <div class="activity">
+
+                            <div class="activity-icon">
+                                📋
+                            </div>
+
+                            <div class="doc-info">
+
+                                <p>
+                                    <strong>
+                                        Audit Trail
+                                    </strong>
+                                </p>
+
+                                <small>
+                                    Review recorded activity
+                                </small>
+
+                                <p>
+
+                                    <a href="/audit-trail"
+                                       class="content-link">
+
+                                        View activity →
+
+                                    </a>
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
                     </div>
+
                 </section>
+
             </div>
+
         </div>
 
+
+        <!-- FOOTER -->
+
         <footer>
+
             © 2026 TrustVault · Your documents. Your control.
+
         </footer>
+
     </main>
+
 </div>
+
 </body>
+
 </html>

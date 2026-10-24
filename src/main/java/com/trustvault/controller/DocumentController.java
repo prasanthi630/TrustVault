@@ -4,7 +4,7 @@ package com.trustvault.controller;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.springframework.web.bind.annotation.DeleteMapping;
+
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
@@ -25,17 +25,34 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.server.ResponseStatusException;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+
 import com.trustvault.FileEncryptionUtil;
 import com.trustvault.model.Document;
 import com.trustvault.service.DocumentService;
+import com.trustvault.service.AuditLogService;
 
 @Controller
 public class DocumentController {
 
     private final DocumentService documentService;
+    private final AuditLogService auditLogService;
 
-    public DocumentController(DocumentService documentService) {
+    public DocumentController(
+            DocumentService documentService,
+            AuditLogService auditLogService) {
+
         this.documentService = documentService;
+        this.auditLogService = auditLogService;
+    }
+
+    // Get current logged-in username
+    private String getUsername() {
+
+        return SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
     }
 
     // Upload document
@@ -46,7 +63,15 @@ public class DocumentController {
 
         try {
 
-            documentService.uploadFile(file);
+        	Document document =
+        	        documentService.uploadFile(file, getUsername());
+
+            // Audit Trail
+            auditLogService.logAction(
+                    getUsername(),
+                    "UPLOAD",
+                    document.getFileName()
+            );
 
             redirectAttributes.addFlashAttribute(
                     "message",
@@ -69,29 +94,45 @@ public class DocumentController {
         return "redirect:/documents";
     }
 
-@PostMapping("/documents/delete/{id}")
-public String deleteDocument(
-        @PathVariable Long id,
-        RedirectAttributes redirectAttributes) {
+    // Delete document
+    @PostMapping("/documents/delete/{id}")
+    public String deleteDocument(
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes) {
 
-    try {
+        try {
 
-        documentService.deleteDocument(id);
+            // Get document details before deleting
+            Document document =
+                    documentService.getDocument(id);
 
-        redirectAttributes.addFlashAttribute(
-                "message",
-                "Document deleted successfully!");
+            String documentName =
+                    document.getFileName();
 
-    } catch (IOException exception) {
+            // Delete document
+            documentService.deleteDocument(id);
 
-        throw new ResponseStatusException(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Unable to delete document.");
+            // Audit Trail
+            auditLogService.logAction(
+                    getUsername(),
+                    "DELETE",
+                    documentName
+            );
 
+            redirectAttributes.addFlashAttribute(
+                    "message",
+                    "Document deleted successfully!");
+
+        } catch (IOException exception) {
+
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Unable to delete document.");
+
+        }
+
+        return "redirect:/documents";
     }
-
-    return "redirect:/documents";
-}
 
     // Download document
     @GetMapping("/documents/download/{id}")
@@ -130,6 +171,13 @@ public String deleteDocument(
                 contentType =
                         "application/octet-stream";
             }
+
+            // Audit Trail
+            auditLogService.logAction(
+                    getUsername(),
+                    "DOWNLOAD",
+                    document.getFileName()
+            );
 
             // Return original file
             return ResponseEntity.ok()

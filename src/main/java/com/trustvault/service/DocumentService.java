@@ -7,12 +7,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
-import com.trustvault.FileEncryptionUtil;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
+import com.trustvault.FileEncryptionUtil;
 import com.trustvault.model.Document;
 import com.trustvault.repository.DocumentRepository;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class DocumentService {
@@ -27,7 +28,9 @@ public class DocumentService {
     }
 
     // Upload document
-    public Document uploadFile(MultipartFile file) throws IOException {
+    public Document uploadFile(
+            MultipartFile file,
+            String ownerEmail) throws IOException {
 
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException(
@@ -91,10 +94,16 @@ public class DocumentService {
         document.setFileSize(file.getSize());
         document.setStoragePath(destination.toString());
 
+        // Save document owner
+        document.setOwnerEmail(ownerEmail);
+
         try {
             return documentRepository.save(document);
+
         } catch (RuntimeException exception) {
+
             Files.deleteIfExists(destination);
+
             throw exception;
         }
     }
@@ -108,15 +117,16 @@ public class DocumentService {
                                 "Document not found."));
     }
 
-public void deleteDocument(Long id) throws IOException {
+    // Delete document
+    public void deleteDocument(Long id) throws IOException {
 
-    Document document = getDocument(id);
+        Document document = getDocument(id);
 
-    Path filePath = Path.of(document.getStoragePath());
+        Path filePath =
+                Path.of(document.getStoragePath());
 
-    Files.deleteIfExists(filePath);
+        Files.deleteIfExists(filePath);
 
-    documentRepository.delete(document);
-}
-
+        documentRepository.delete(document);
+    }
 }
