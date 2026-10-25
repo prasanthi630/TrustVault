@@ -116,6 +116,21 @@ public class PageController {
         return "dashboard";
     }
 
+    // User Profile page
+    @GetMapping("/profile")
+    public String profile(
+            @AuthenticationPrincipal UserDetails userDetails,
+            Model model) {
+
+        String email = userDetails.getUsername();
+
+        AppUser user = appUserService.findByEmail(email);
+
+        model.addAttribute("user", user);
+
+        return "profile";
+    }
+
     // Login page
     @GetMapping("/login")
     public String login() {

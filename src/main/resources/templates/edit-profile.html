@@ -1,0 +1,407 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustVault | Edit Profile</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(circle at 10% 10%, #2563eb25, transparent 35%),
+                radial-gradient(circle at 90% 90%, #7c3aed20, transparent 35%),
+                #080d1c;
+            color: #f8fafc;
+        }
+
+        .navbar {
+            min-height: 75px;
+            padding: 18px 7%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            background: #0d1528e8;
+            border-bottom: 1px solid #ffffff15;
+        }
+
+        .logo {
+            color: white;
+            font-size: 25px;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #60a5fa;
+        }
+
+        .back-link {
+            color: #93c5fd;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 620px;
+            margin: 55px auto;
+        }
+
+        .heading {
+            margin-bottom: 25px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 8px 12px;
+            margin-bottom: 15px;
+            border: 1px solid #60a5fa40;
+            border-radius: 30px;
+            background: #2563eb20;
+            color: #93c5fd;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+        }
+
+        .heading h1 {
+            font-size: clamp(28px, 4vw, 37px);
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+
+        .heading h1 span {
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .heading p {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .card {
+            padding: 32px;
+            background: linear-gradient(145deg, #182238ee, #111827f5);
+            border: 1px solid #ffffff19;
+            border-radius: 22px;
+            box-shadow: 0 25px 70px #00000035;
+        }
+
+        .card-heading {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding-bottom: 24px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #ffffff12;
+        }
+
+        .icon {
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            font-size: 22px;
+        }
+
+        .card-heading h2 {
+            font-size: 18px;
+            margin-bottom: 6px;
+        }
+
+        .card-heading p {
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .message {
+            padding: 12px 14px;
+            margin-bottom: 20px;
+            border-radius: 9px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .error {
+            color: #fecaca;
+            background: #ef44441c;
+            border: 1px solid #f8717140;
+        }
+
+        .success {
+            color: #bbf7d0;
+            background: #22c55e14;
+            border: 1px solid #86efac40;
+        }
+
+        .field {
+            margin-bottom: 22px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 10px;
+            color: #e2e8f0;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .field input {
+            display: block;
+            width: 100%;
+            min-height: 50px;
+            padding: 14px 15px;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            outline: none;
+            background: #0b1220;
+            color: white;
+            font-size: 14px;
+            transition: .2s;
+        }
+
+        .field input:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px #3b82f620;
+        }
+
+        .field input[readonly] {
+            color: #94a3b8;
+            background: #111827;
+            cursor: not-allowed;
+        }
+
+        .hint {
+            display: block;
+            margin-top: 8px;
+            color: #64748b;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .security-note {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 15px;
+            margin-top: 25px;
+            border: 1px solid #818cf825;
+            border-radius: 11px;
+            background: #2563eb12;
+        }
+
+        .security-note .shield {
+            font-size: 20px;
+        }
+
+        .security-note p {
+            color: #a5b4fc;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn {
+            flex: 1;
+            min-height: 47px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .save-btn {
+            border: none;
+            color: white;
+            background: linear-gradient(100deg, #2563eb, #7c3aed);
+            box-shadow: 0 8px 22px #4f46e530;
+        }
+
+        .cancel-btn {
+            color: #dbeafe;
+            border: 1px solid #ffffff20;
+            background: #ffffff08;
+        }
+
+        footer {
+            padding: 25px 15px;
+            color: #64748b;
+            text-align: center;
+            font-size: 11px;
+        }
+
+        @media (max-width: 500px) {
+            .navbar {
+                padding: 16px 5%;
+            }
+
+            .logo {
+                font-size: 21px;
+            }
+
+            .container {
+                margin: 32px auto;
+            }
+
+            .card {
+                padding: 23px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="navbar">
+        <a th:href="@{/dashboard}" class="logo">
+            ⬡ Trust<span>Vault</span>
+        </a>
+
+        <a th:href="@{/profile}" class="back-link">
+            ← Back to Profile
+        </a>
+    </header>
+
+    <main class="container">
+
+        <section class="heading">
+            <div class="eyebrow">ACCOUNT SETTINGS</div>
+
+            <h1>Edit <span>Profile</span></h1>
+
+            <p>
+                Update your personal information associated with
+                your TrustVault account.
+            </p>
+        </section>
+
+        <section class="card">
+
+            <div class="card-heading">
+                <div class="icon">👤</div>
+
+                <div>
+                    <h2>Personal Information</h2>
+                    <p>Keep your profile details up to date.</p>
+                </div>
+            </div>
+
+            <div th:if="${error != null}"
+                 class="message error"
+                 role="alert"
+                 th:text="${error}">
+                An error occurred.
+            </div>
+
+            <div th:if="${success != null}"
+                 class="message success"
+                 role="status"
+                 th:text="${success}">
+                Profile updated successfully.
+            </div>
+
+            <form th:action="@{/profile/update}" method="post">
+
+                <div class="field">
+                    <label for="name">Full Name</label>
+
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        th:value="${user.name}"
+                        maxlength="100"
+                        autocomplete="name"
+                        required>
+
+                    <small class="hint">
+                        Enter the name you want displayed on your profile.
+                    </small>
+                </div>
+
+                <div class="field">
+                    <label for="email">Email Address</label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        th:value="${user.email}"
+                        readonly>
+
+                    <small class="hint">
+                        Email cannot be changed from this page.
+                    </small>
+                </div>
+
+                <div class="security-note">
+                    <div class="shield">🔐</div>
+
+                    <p>
+                        Your changes apply only to your currently
+                        logged-in account. Your password is not
+                        displayed or changed here.
+                    </p>
+                </div>
+
+                <div class="actions">
+                    <a th:href="@{/profile}" class="btn cancel-btn">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn save-btn">
+                        Save Changes ✓
+                    </button>
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+    <footer>
+        © 2026 TrustVault · Your documents. Your control.
+    </footer>
+
+</body>
+</html>

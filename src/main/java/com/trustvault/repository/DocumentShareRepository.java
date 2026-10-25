@@ -23,4 +23,9 @@ public interface DocumentShareRepository
             Long id,
             String sharedWith
     );
+
+    // Find sharing permissions linked to the user's documents
+    List<DocumentShare> findByDocumentIdIn(
+            List<Long> documentIds
+    );
 }

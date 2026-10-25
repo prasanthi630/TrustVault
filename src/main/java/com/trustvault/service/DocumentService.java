@@ -169,21 +169,36 @@ public class DocumentService {
     }
 
     // Delete document only if it belongs to the logged-in user
+
+    // Delete document only if it belongs to the logged-in user
     public void deleteDocument(
             Long id,
             String ownerEmail) throws IOException {
 
-        // Check document ownership
+        // Verify ownership
         Document document = getDocument(id, ownerEmail);
 
-        // Get file path
-        Path filePath =
-                Path.of(document.getStoragePath());
+        // Get the exact path stored in the database
+        Path filePath = Path.of(document.getStoragePath())
+                .toAbsolutePath()
+                .normalize();
+
+        System.out.println("Encrypted file path: " + filePath);
+        System.out.println("File exists before deletion: "
+                + Files.exists(filePath));
 
         // Delete encrypted file
-        Files.deleteIfExists(filePath);
+        boolean deleted = Files.deleteIfExists(filePath);
 
-        // Delete database record
+        System.out.println("File deleted: " + deleted);
+
+        // Remove document record only after file deletion succeeds
+        if (Files.exists(filePath)) {
+            throw new IOException(
+                    "Encrypted file could not be deleted: " + filePath);
+        }
+
         documentRepository.delete(document);
     }
+
 }

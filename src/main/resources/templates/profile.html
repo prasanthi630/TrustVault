@@ -1,0 +1,843 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustVault | My Profile</title>
+
+    <style>
+        :root {
+            --bg: #080d1c;
+            --border: rgba(255, 255, 255, 0.10);
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --blue: #60a5fa;
+            --purple: #a78bfa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background:
+                radial-gradient(ellipse at 10% 5%, #2563eb22, transparent 35%),
+                radial-gradient(ellipse at 90% 90%, #7c3aed20, transparent 35%),
+                var(--bg);
+            color: var(--text);
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* NAVIGATION */
+        .navbar {
+            min-height: 76px;
+            padding: 16px 6%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(8, 13, 28, 0.82);
+            backdrop-filter: blur(18px);
+        }
+
+        .brand {
+            color: var(--text);
+            font-size: 25px;
+            font-weight: 800;
+            letter-spacing: -.8px;
+        }
+
+        .brand-icon {
+            color: var(--blue);
+            margin-right: 5px;
+        }
+
+        .brand span {
+            color: var(--blue);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .nav-link {
+            padding: 10px 15px;
+            color: #cbd5e1;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            font-size: 13px;
+            transition: .25s;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background: #ffffff0a;
+            border-color: var(--border);
+        }
+
+        .nav-link.active {
+            color: #bfdbfe;
+            background: #3b82f615;
+            border-color: #60a5fa35;
+        }
+
+        /* PAGE LAYOUT */
+        .container {
+            width: 90%;
+            max-width: 1120px;
+            margin: 48px auto 60px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .breadcrumb a {
+            color: var(--blue);
+        }
+
+        .heading {
+            margin-bottom: 30px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            color: #93c5fd;
+            background: #2563eb18;
+            border: 1px solid #60a5fa30;
+            padding: 8px 12px;
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+        }
+
+        .heading h1 {
+            font-size: clamp(30px, 4vw, 42px);
+            letter-spacing: -1.3px;
+            margin-bottom: 10px;
+        }
+
+        .heading h1 span {
+            background: linear-gradient(90deg, var(--blue), var(--purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .heading p {
+            max-width: 580px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        /* PROFILE GRID */
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 330px minmax(0, 1fr);
+            gap: 24px;
+            align-items: start;
+        }
+
+        .card {
+            background: linear-gradient(
+                145deg,
+                rgba(24, 34, 56, .96),
+                rgba(14, 22, 39, .96)
+            );
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            box-shadow: 0 24px 65px rgba(0, 0, 0, .20);
+            overflow: hidden;
+        }
+
+        /* IDENTITY CARD */
+        .identity-cover {
+            height: 115px;
+            background:
+                radial-gradient(circle at 20% 20%, #60a5fa88, transparent 35%),
+                radial-gradient(circle at 85% 80%, #a78bfa80, transparent 38%),
+                linear-gradient(120deg, #172554, #312e81, #111827);
+            position: relative;
+        }
+
+        .identity-cover::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                135deg,
+                transparent,
+                rgba(255, 255, 255, .05)
+            );
+        }
+
+        .identity-content {
+            padding: 0 25px 27px;
+        }
+
+        .avatar-row {
+            margin-top: -43px;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 17px;
+        }
+
+        .avatar {
+            width: 88px;
+            height: 88px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 25px;
+            border: 5px solid #151f33;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            box-shadow: 0 10px 30px #4f46e54d;
+            color: white;
+            font-size: 36px;
+            font-weight: 800;
+        }
+
+        .identity-content h2 {
+            font-size: 23px;
+            font-weight: 750;
+            letter-spacing: -.5px;
+            overflow-wrap: anywhere;
+            margin-bottom: 9px;
+        }
+
+        .account-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 10px;
+            background: #3b82f615;
+            border: 1px solid #60a5fa30;
+            border-radius: 30px;
+            color: #bfdbfe;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .account-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #60a5fa;
+        }
+
+        .identity-description {
+            margin-top: 18px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .identity-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 23px 0;
+        }
+
+        .mini-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+            margin-bottom: 19px;
+        }
+
+        .mini-info:last-child {
+            margin-bottom: 0;
+        }
+
+        .mini-icon {
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: #ffffff08;
+            border: 1px solid var(--border);
+            font-size: 16px;
+        }
+
+        .mini-info small {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+            margin: 3px 0 6px;
+        }
+
+        .mini-info strong {
+            display: block;
+            color: #e2e8f0;
+            font-size: 12px;
+            font-weight: 600;
+            overflow-wrap: anywhere;
+            line-height: 1.6;
+        }
+
+        /* ACCOUNT DETAILS */
+        .details-card {
+            padding: 29px;
+        }
+
+        .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 27px;
+        }
+
+        .section-icon {
+            width: 45px;
+            height: 45px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #2563eb30, #7c3aed30);
+            border: 1px solid #818cf830;
+            font-size: 20px;
+        }
+
+        .section-heading h3 {
+            font-size: 19px;
+            margin-bottom: 5px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .field {
+            margin-bottom: 22px;
+        }
+
+        .field label {
+            display: block;
+            color: #cbd5e1;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .field-value {
+            min-height: 52px;
+            padding: 15px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-radius: 11px;
+            border: 1px solid #334155;
+            background: rgba(8, 13, 28, .7);
+            color: #f1f5f9;
+            font-size: 14px;
+            overflow-wrap: anywhere;
+            line-height: 1.6;
+        }
+
+        .field-value .field-symbol {
+            color: var(--blue);
+            flex-shrink: 0;
+        }
+
+        .field-hint {
+            display: block;
+            margin-top: 8px;
+            color: #718096;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .security-panel {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 17px;
+            margin-top: 28px;
+            border-radius: 13px;
+            background: linear-gradient(110deg, #2563eb12, #7c3aed12);
+            border: 1px solid #818cf825;
+        }
+
+        .security-symbol {
+            font-size: 22px;
+        }
+
+        .security-panel h4 {
+            font-size: 13px;
+            margin: 2px 0 7px;
+        }
+
+        .security-panel p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        /* BUTTONS */
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 27px;
+        }
+
+        .btn {
+            min-height: 45px;
+            padding: 12px 17px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            transition: transform .2s, box-shadow .2s;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            color: white;
+            background: linear-gradient(100deg, #2563eb, #7c3aed);
+            border: none;
+            box-shadow: 0 8px 22px #4f46e526;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 12px 28px #4f46e540;
+        }
+
+        .btn-secondary {
+            color: #dbeafe;
+            background: #ffffff08;
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #ffffff10;
+        }
+
+        /* DELETE ACCOUNT */
+        .delete-account-box {
+            margin-top: 32px;
+            padding: 22px;
+            border: 1px solid #ef444440;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #ef44440a, #7f1d1d0a);
+        }
+
+        .delete-account-box h3 {
+            color: #fca5a5;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .delete-account-box p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.8;
+            margin-bottom: 17px;
+        }
+
+        .delete-account-box label {
+            display: block;
+            color: #e2e8f0;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 9px;
+        }
+
+        .delete-account-box input {
+            width: 100%;
+            padding: 13px;
+            margin-bottom: 15px;
+            color: white;
+            background: #0b1220;
+            border: 1px solid #475569;
+            border-radius: 9px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .delete-account-box input:focus {
+            border-color: #f87171;
+            box-shadow: 0 0 0 3px #ef44441a;
+        }
+
+        .delete-btn {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #f8717160;
+            border-radius: 9px;
+            background: #dc262620;
+            color: #fca5a5;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .delete-btn:hover {
+            background: #dc262640;
+        }
+
+        .delete-error {
+            padding: 12px;
+            margin-bottom: 18px;
+            border-radius: 9px;
+            background: #ef44441a;
+            border: 1px solid #f8717140;
+            color: #fecaca;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 28px 15px;
+            color: #64748b;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 850px) {
+            .profile-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .identity-content {
+                padding: 0 25px 25px;
+            }
+
+            .identity-description {
+                max-width: 500px;
+            }
+
+            .container {
+                margin-top: 35px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .navbar {
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 17px 5%;
+            }
+
+            .brand {
+                font-size: 21px;
+            }
+
+            .nav-actions {
+                gap: 4px;
+            }
+
+            .nav-link {
+                padding: 8px;
+                font-size: 11px;
+            }
+
+            .container {
+                width: 92%;
+                margin-top: 29px;
+            }
+
+            .heading h1 {
+                font-size: 30px;
+            }
+
+            .details-card {
+                padding: 21px;
+            }
+
+            .section-heading h3 {
+                font-size: 17px;
+            }
+
+            .action-row {
+                flex-direction: column;
+            }
+
+            .action-row .btn {
+                width: 100%;
+            }
+
+            .delete-account-box {
+                padding: 17px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOP NAVIGATION -->
+    <header class="navbar">
+
+        <a th:href="@{/dashboard}" class="brand">
+            <span class="brand-icon">⬡</span>Trust<span>Vault</span>
+        </a>
+
+        <nav class="nav-actions">
+            <a th:href="@{/dashboard}" class="nav-link">
+                Dashboard
+            </a>
+
+            <a th:href="@{/documents}" class="nav-link">
+                Documents
+            </a>
+
+            <a th:href="@{/profile}" class="nav-link active">
+                My Profile
+            </a>
+        </nav>
+
+    </header>
+
+    <main class="container">
+
+        <div class="breadcrumb">
+            <a th:href="@{/dashboard}">Dashboard</a>
+            <span>›</span>
+            <span>My Profile</span>
+        </div>
+
+        <section class="heading">
+            <div class="eyebrow">YOUR PERSONAL SPACE</div>
+
+            <h1>My <span>Profile</span></h1>
+
+            <p>
+                Manage your digital identity and view the account
+                information associated with your TrustVault account.
+            </p>
+        </section>
+
+        <div class="profile-layout">
+
+            <!-- LEFT: USER IDENTITY -->
+            <section class="card">
+
+                <div class="identity-cover"></div>
+
+                <div class="identity-content">
+
+                    <div class="avatar-row">
+                        <div class="avatar"
+                             th:text="${user.name != null and !user.name.isEmpty() ? #strings.substring(user.name, 0, 1).toUpperCase() : 'U'}">
+                            U
+                        </div>
+                    </div>
+
+                    <h2 th:text="${user.name}">User Name</h2>
+
+                    <div class="account-label">
+                        <span class="account-dot"></span>
+                        TrustVault Account
+                    </div>
+
+                    <p class="identity-description">
+                        Welcome to your secure document workspace.
+                        Your profile details are loaded from your
+                        registered account.
+                    </p>
+
+                    <div class="identity-divider"></div>
+
+                    <div class="mini-info">
+                        <div class="mini-icon">✉</div>
+
+                        <div>
+                            <small>Email address</small>
+                            <strong th:text="${user.email}">
+                                user@example.com
+                            </strong>
+                        </div>
+                    </div>
+
+                    <div class="mini-info">
+                        <div class="mini-icon">🔐</div>
+
+                        <div>
+                            <small>Workspace</small>
+                            <strong>TrustVault Secure Workspace</strong>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- RIGHT: ACCOUNT DETAILS -->
+            <section class="card details-card">
+
+                <div class="section-heading">
+                    <div class="section-icon">👤</div>
+
+                    <div>
+                        <h3>Account Information</h3>
+                        <p>Your registered profile details</p>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>FULL NAME</label>
+
+                    <div class="field-value">
+                        <span class="field-symbol">◉</span>
+                        <span th:text="${user.name}">User Name</span>
+                    </div>
+
+                    <span class="field-hint">
+                        Your name as provided during registration.
+                    </span>
+                </div>
+
+                <div class="field">
+                    <label>EMAIL ADDRESS</label>
+
+                    <div class="field-value">
+                        <span class="field-symbol">✉</span>
+                        <span th:text="${user.email}">
+                            user@example.com
+                        </span>
+                    </div>
+
+                    <span class="field-hint">
+                        Your registered email address.
+                    </span>
+                </div>
+
+                <div class="security-panel">
+                    <div class="security-symbol">🛡️</div>
+
+                    <div>
+                        <h4>Your privacy matters</h4>
+
+                        <p>
+                            This page displays the profile of the
+                            currently logged-in user. Your password
+                            is never displayed on this page.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- PROFILE ACTIONS -->
+                <div class="action-row">
+
+                    <a th:href="@{/profile/edit}"
+                       class="btn btn-secondary">
+                        ✏️ Edit Profile
+                    </a>
+
+                    <a th:href="@{/dashboard}"
+                       class="btn btn-primary">
+                        ← Back to Dashboard
+                    </a>
+
+                    <a th:href="@{/documents}"
+                       class="btn btn-secondary">
+                        View My Documents →
+                    </a>
+
+                </div>
+
+                <!-- DELETE ACCOUNT -->
+                <div class="delete-account-box">
+
+                    <h3>⚠ Delete Account</h3>
+
+                    <p>
+                        This action permanently deletes your account,
+                        your uploaded documents and related sharing
+                        permissions. This action cannot be undone.
+                        Please confirm your password before continuing.
+                    </p>
+
+                    <!-- Display account deletion errors -->
+                    <div th:if="${deleteError != null}"
+                         class="delete-error"
+                         role="alert"
+                         th:text="${deleteError}">
+                        Account could not be deleted.
+                    </div>
+
+                    <form th:action="@{/profile/delete}"
+                          method="post"
+                          onsubmit="return confirmDeleteAccount()">
+
+                        <label for="deletePassword">
+                            Confirm your current password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="deletePassword"
+                            name="password"
+                            placeholder="Enter your current password"
+                            autocomplete="current-password"
+                            required>
+
+                        <button type="submit" class="delete-btn">
+                            🗑 Delete My Account
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+    <footer class="footer">
+        © 2026 TrustVault · Your documents. Your control.
+    </footer>
+
+    <script>
+        function confirmDeleteAccount() {
+            return confirm(
+                "Are you sure you want to permanently delete your account? " +
+                "Your own documents and related sharing permissions may also be removed."
+            );
+        }
+    </script>
+
+</body>
+</html>

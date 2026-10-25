@@ -3,486 +3,473 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>TrustVault | Dashboard</title>
-
-<style>
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: "Segoe UI", Arial, sans-serif;
-    background: #0b1120;
-    color: #f1f5f9;
-}
-
-.layout {
-    display: flex;
-    min-height: 100vh;
-}
-
-/* SIDEBAR */
-
-.sidebar {
-    width: 250px;
-    background: #101a2d;
-    border-right: 1px solid #ffffff12;
-    padding: 28px 18px;
-    display: flex;
-    flex-direction: column;
-}
-
-.logo {
-    font-size: 25px;
-    font-weight: 800;
-    margin: 0 10px 42px;
-}
-
-.logo span {
-    color: #60a5fa;
-}
-
-.nav-label {
-    color: #64748b;
-    font-size: 10px;
-    font-weight: bold;
-    letter-spacing: 1.5px;
-    margin: 0 12px 15px;
-}
-
-.sidebar nav a {
-    display: block;
-    color: #a7b4ca;
-    text-decoration: none;
-    padding: 13px 14px;
-    border-radius: 9px;
-    margin-bottom: 7px;
-    font-size: 14px;
-    transition: .2s;
-}
-
-.sidebar nav a:hover,
-.sidebar nav a.active {
-    background: #2563eb25;
-    color: #93c5fd;
-}
-
-.sidebar .bottom {
-    margin-top: auto;
-    padding-top: 25px;
-}
-
-.sidebar .profile {
-    border-top: 1px solid #ffffff12;
-    padding: 20px 8px 0;
-    color: #94a3b8;
-    font-size: 12px;
-    line-height: 1.8;
-}
-
-/* MAIN */
-
-.main {
-    flex: 1;
-    min-width: 0;
-}
-
-/* TOPBAR */
-
-.topbar {
-    min-height: 85px;
-    padding: 20px 35px;
-    border-bottom: 1px solid #ffffff12;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-}
-
-.topbar h2 {
-    font-size: 20px;
-}
-
-.topbar p {
-    color: #94a3b8;
-    font-size: 12px;
-    margin-top: 6px;
-}
-
-.user-badge {
-    width: 42px;
-    height: 42px;
-    display: grid;
-    place-items: center;
-    border-radius: 13px;
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    font-weight: bold;
-}
-
-/* CONTENT */
-
-.content {
-    padding: 35px;
-    max-width: 1500px;
-    margin: auto;
-}
-
-.welcome {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 30px;
-}
-
-.welcome h1,
-.welcome h2 {
-    font-size: clamp(25px, 3vw, 34px);
-    margin-bottom: 10px;
-}
-
-.welcome p {
-    color: #94a3b8;
-    line-height: 1.6;
-    font-size: 14px;
-}
-
-/* BUTTONS */
-
-.primary-btn {
-    display: inline-block;
-    background: linear-gradient(100deg, #2563eb, #7c3aed);
-    color: white;
-    text-decoration: none;
-    padding: 13px 18px;
-    border-radius: 9px;
-    font-size: 13px;
-    font-weight: bold;
-    white-space: nowrap;
-    border: none;
-    cursor: pointer;
-}
-
-.primary-btn:hover {
-    opacity: .85;
-}
-
-/* STATISTICS */
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
-    margin-bottom: 28px;
-}
-
-.stat-card {
-    padding: 24px;
-    border: 1px solid #ffffff12;
-    border-radius: 15px;
-    background: linear-gradient(145deg, #172238, #101827);
-}
-
-.stat-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 23px;
-}
-
-.stat-icon {
-    width: 45px;
-    height: 45px;
-    display: grid;
-    place-items: center;
-    border-radius: 12px;
-    background: #2563eb25;
-    font-size: 22px;
-}
-
-.stat-card p {
-    color: #94a3b8;
-    font-size: 13px;
-    margin-bottom: 9px;
-}
-
-.stat-card h2 {
-    font-size: 32px;
-}
-
-.stat-card small {
-    display: block;
-    color: #64748b;
-    font-size: 11px;
-    margin-top: 8px;
-}
-
-/* COLUMNS */
-
-.columns {
-    display: grid;
-    grid-template-columns: minmax(0, 1.5fr) minmax(250px, .8fr);
-    gap: 22px;
-}
-
-.panel {
-    background: #111b2e;
-    border: 1px solid #ffffff12;
-    border-radius: 15px;
-    padding: 24px;
-    margin-bottom: 22px;
-    min-width: 0;
-}
-
-.panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 22px;
-}
-
-.panel-header h3 {
-    font-size: 16px;
-}
-
-.panel-header a {
-    color: #93c5fd;
-    font-size: 12px;
-    text-decoration: none;
-}
-
-/* DOCUMENTS */
-
-.document {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    padding: 16px 0;
-    border-bottom: 1px solid #ffffff0c;
-}
-
-.document:last-child {
-    border-bottom: none;
-}
-
-.file-icon {
-    width: 43px;
-    height: 43px;
-    flex-shrink: 0;
-    display: grid;
-    place-items: center;
-    background: #2563eb22;
-    border-radius: 11px;
-    font-size: 21px;
-}
-
-.doc-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.doc-info strong {
-    display: block;
-    font-size: 13px;
-    overflow-wrap: anywhere;
-    margin-bottom: 5px;
-}
-
-.doc-info small {
-    color: #64748b;
-    font-size: 11px;
-}
-
-.status {
-    color: #86efac;
-    background: #16a34a18;
-    padding: 7px 9px;
-    border-radius: 7px;
-    font-size: 10px;
-    white-space: nowrap;
-}
-
-.empty-message {
-    color: #94a3b8;
-    font-size: 13px;
-    padding: 15px 0;
-}
-
-/* ACTIVITY */
-
-.activity {
-    display: flex;
-    gap: 12px;
-    padding: 14px 0;
-    border-bottom: 1px solid #ffffff0c;
-}
-
-.activity:last-child {
-    border-bottom: none;
-}
-
-.activity-icon {
-    width: 35px;
-    height: 35px;
-    flex-shrink: 0;
-    display: grid;
-    place-items: center;
-    background: #ffffff0a;
-    border-radius: 10px;
-}
-
-.activity p {
-    font-size: 12px;
-    line-height: 1.6;
-}
-
-.activity small {
-    color: #64748b;
-    font-size: 10px;
-}
-
-/* SECURITY */
-
-.security-card {
-    background: linear-gradient(135deg, #172554, #312e81);
-    border: 1px solid #818cf830;
-    border-radius: 15px;
-    padding: 24px;
-}
-
-.security-card .shield {
-    font-size: 30px;
-    margin-bottom: 14px;
-}
-
-.security-card h3 {
-    margin-bottom: 10px;
-    font-size: 17px;
-}
-
-.security-card p {
-    color: #c7d2fe;
-    font-size: 12px;
-    line-height: 1.8;
-}
-
-.security-label {
-    display: inline-block;
-    margin-top: 17px;
-    padding: 8px 10px;
-    border-radius: 8px;
-    background: #ffffff13;
-    color: #c7d2fe;
-    font-size: 10px;
-}
-
-/* LINKS */
-
-.content-link {
-    display: inline-block;
-    margin-top: 12px;
-    color: #93c5fd;
-    text-decoration: none;
-    font-size: 12px;
-}
-
-.content-link:hover {
-    color: #bfdbfe;
-}
-
-/* FOOTER */
-
-footer {
-    text-align: center;
-    color: #64748b;
-    font-size: 11px;
-    padding: 22px;
-}
-
-/* RESPONSIVE */
-
-@media (max-width: 1050px) {
-
-    .sidebar {
-        width: 210px;
-    }
-
-    .columns {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 700px) {
-
-    .layout {
-        display: block;
-    }
-
-    .sidebar {
-        width: 100%;
-        padding: 18px;
-    }
-
-    .logo {
-        margin: 0 0 16px;
-    }
-
-    .nav-label,
-    .profile {
-        display: none;
-    }
-
-    .sidebar nav {
-        display: flex;
-        gap: 8px;
-        overflow-x: auto;
-    }
-
-    .sidebar nav a {
-        white-space: nowrap;
-        margin: 0;
-        padding: 10px;
-    }
-
-    .sidebar .bottom {
-        display: none;
-    }
-
-    .topbar {
-        padding: 18px;
-    }
-
-    .content {
-        padding: 22px 16px;
-    }
-
-    .stats {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-
-    .stat-card {
-        padding: 19px;
-    }
-
-    .welcome {
-        align-items: flex-start;
-        flex-direction: column;
-    }
-
-    .panel {
-        padding: 18px;
-    }
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TrustVault | Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #0b1120;
+            color: #f1f5f9;
+        }
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 250px;
+            flex-shrink: 0;
+            background: #101a2d;
+            border-right: 1px solid #ffffff12;
+            padding: 28px 18px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 800;
+            margin: 0 10px 42px;
+        }
+
+        .logo span {
+            color: #60a5fa;
+        }
+
+        .nav-label {
+            color: #64748b;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            margin: 0 12px 15px;
+        }
+
+        .sidebar nav a {
+            display: block;
+            color: #a7b4ca;
+            text-decoration: none;
+            padding: 13px 14px;
+            border-radius: 9px;
+            margin-bottom: 7px;
+            font-size: 14px;
+            transition: .2s;
+        }
+
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            background: #2563eb25;
+            color: #93c5fd;
+        }
+
+        .sidebar .bottom {
+            margin-top: auto;
+            padding-top: 25px;
+        }
+
+        .sidebar .profile {
+            border-top: 1px solid #ffffff12;
+            padding: 20px 8px 0;
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        /* MAIN */
+        .main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* TOPBAR */
+        .topbar {
+            min-height: 85px;
+            padding: 20px 35px;
+            border-bottom: 1px solid #ffffff12;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .topbar h2 {
+            font-size: 20px;
+        }
+
+        .topbar p {
+            color: #94a3b8;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        .user-badge {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            font-weight: bold;
+        }
+
+        /* CONTENT */
+        .content {
+            padding: 35px;
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        .welcome {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .welcome h1,
+        .welcome h2 {
+            font-size: clamp(25px, 3vw, 34px);
+            margin-bottom: 10px;
+        }
+
+        .welcome p {
+            color: #94a3b8;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        /* BUTTONS */
+        .primary-btn {
+            display: inline-block;
+            background: linear-gradient(100deg, #2563eb, #7c3aed);
+            color: white;
+            text-decoration: none;
+            padding: 13px 18px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: bold;
+            white-space: nowrap;
+            border: none;
+            cursor: pointer;
+        }
+
+        .primary-btn:hover {
+            opacity: .85;
+        }
+
+        /* STATISTICS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            padding: 24px;
+            border: 1px solid #ffffff12;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #172238, #101827);
+            min-width: 0;
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 23px;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: #2563eb25;
+            font-size: 22px;
+        }
+
+        .stat-card p {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 9px;
+        }
+
+        .stat-card h2 {
+            font-size: 32px;
+        }
+
+        .stat-card small {
+            display: block;
+            color: #64748b;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        /* COLUMNS */
+        .columns {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(250px, .8fr);
+            gap: 22px;
+        }
+
+        .panel {
+            background: #111b2e;
+            border: 1px solid #ffffff12;
+            border-radius: 15px;
+            padding: 24px;
+            margin-bottom: 22px;
+            min-width: 0;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .panel-header h3 {
+            font-size: 16px;
+        }
+
+        .panel-header a {
+            color: #93c5fd;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        /* DOCUMENTS */
+        .document {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 16px 0;
+            border-bottom: 1px solid #ffffff0c;
+        }
+
+        .document:last-child {
+            border-bottom: none;
+        }
+
+        .file-icon {
+            width: 43px;
+            height: 43px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            background: #2563eb22;
+            border-radius: 11px;
+            font-size: 21px;
+        }
+
+        .doc-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .doc-info strong {
+            display: block;
+            font-size: 13px;
+            overflow-wrap: anywhere;
+            margin-bottom: 5px;
+        }
+
+        .doc-info small {
+            color: #64748b;
+            font-size: 11px;
+        }
+
+        .status {
+            color: #86efac;
+            background: #16a34a18;
+            padding: 7px 9px;
+            border-radius: 7px;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .empty-message {
+            color: #94a3b8;
+            font-size: 13px;
+            padding: 15px 0;
+        }
+
+        /* ACTIVITY */
+        .activity {
+            display: flex;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid #ffffff0c;
+        }
+
+        .activity:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 35px;
+            height: 35px;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+            background: #ffffff0a;
+            border-radius: 10px;
+        }
+
+        .activity p {
+            font-size: 12px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .activity small {
+            color: #64748b;
+            font-size: 10px;
+            overflow-wrap: anywhere;
+        }
+
+        /* SECURITY */
+        .security-card {
+            background: linear-gradient(135deg, #172554, #312e81);
+            border: 1px solid #818cf830;
+            border-radius: 15px;
+            padding: 24px;
+        }
+
+        .security-card .shield {
+            font-size: 30px;
+            margin-bottom: 14px;
+        }
+
+        .security-card h3 {
+            margin-bottom: 10px;
+            font-size: 17px;
+        }
+
+        .security-card p {
+            color: #c7d2fe;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .security-label {
+            display: inline-block;
+            margin-top: 17px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: #ffffff13;
+            color: #c7d2fe;
+            font-size: 10px;
+        }
+
+        /* LINKS */
+        .content-link {
+            display: inline-block;
+            margin-top: 12px;
+            color: #93c5fd;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .content-link:hover {
+            color: #bfdbfe;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 11px;
+            padding: 22px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1050px) {
+            .sidebar {
+                width: 210px;
+            }
+
+            .columns {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 18px;
+            }
+
+            .logo {
+                margin: 0 0 16px;
+            }
+
+            .nav-label,
+            .profile {
+                display: none;
+            }
+
+            .sidebar nav {
+                display: flex;
+                gap: 8px;
+                overflow-x: auto;
+            }
+
+            .sidebar nav a {
+                white-space: nowrap;
+                margin: 0;
+                padding: 10px;
+            }
+
+            .sidebar .bottom {
+                display: none;
+            }
+
+            .topbar {
+                padding: 18px;
+            }
+
+            .content {
+                padding: 22px 16px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 19px;
+            }
+
+            .welcome {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .panel {
+                padding: 18px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -490,7 +477,6 @@ footer {
 <div class="layout">
 
     <!-- SIDEBAR -->
-
     <aside class="sidebar">
 
         <div class="logo">
@@ -500,81 +486,72 @@ footer {
         <div class="nav-label">WORKSPACE</div>
 
         <nav>
-
-            <a href="/dashboard" class="active">
+            <a th:href="@{/dashboard}" class="active">
                 ▦ &nbsp; Dashboard
             </a>
 
-            <a href="/documents">
+            <a th:href="@{/documents}">
                 ▤ &nbsp; My Documents
             </a>
 
-            <a href="/shared-documents">
+            <a th:href="@{/shared-documents}">
                 ⇄ &nbsp; Shared Access
             </a>
 
-            <a href="/audit-trail">
+            <a th:href="@{/audit-trail}">
                 📋 &nbsp; Audit Trail
             </a>
 
+            <!-- My Profile link -->
+            <a th:href="@{/profile}">
+                👤 &nbsp; My Profile
+            </a>
         </nav>
 
         <div class="bottom">
 
             <div class="nav-label">ACCOUNT</div>
 
-            <form action="/logout" method="post">
-
+            <form th:action="@{/logout}" method="post">
                 <button type="submit" class="primary-btn">
                     ↪ Logout
                 </button>
-
             </form>
 
         </div>
 
         <div class="profile">
-
             <strong>TrustVault</strong><br>
-
             Secure document workspace
-
         </div>
 
     </aside>
 
-
     <!-- MAIN -->
-
     <main class="main">
 
         <!-- TOPBAR -->
-
         <header class="topbar">
 
             <div>
-
                 <h2>Dashboard</h2>
-
                 <p>Your secure document workspace</p>
-
             </div>
 
-            <div class="user-badge">TV</div>
+            <div class="user-badge"
+                 th:text="${name != null and !name.isEmpty() ? #strings.substring(name, 0, 1).toUpperCase() : 'U'}">
+                U
+            </div>
 
         </header>
 
-
         <!-- CONTENT -->
-
         <div class="content">
 
             <!-- WELCOME -->
-
             <section class="welcome">
 
                 <div>
-
                     <h2>
                         Welcome,
                         <span th:text="${name}">User</span>!
@@ -584,120 +561,86 @@ footer {
                         Manage your documents, sharing permissions,
                         and activity.
                     </p>
-
                 </div>
 
-                <a href="/documents" class="primary-btn">
+                <a th:href="@{/documents}" class="primary-btn">
                     ＋ Manage Documents
                 </a>
 
             </section>
 
-
             <!-- STATISTICS -->
-
             <section class="stats">
 
                 <!-- TOTAL DOCUMENTS -->
-
                 <div class="stat-card">
 
                     <div class="stat-top">
-
                         <div class="stat-icon">📄</div>
-
                     </div>
 
                     <p>Total Documents</p>
-
                     <h2 th:text="${totalDocuments}">0</h2>
-
                     <small>Your document library</small>
 
                 </div>
 
-
                 <!-- SHARED DOCUMENTS -->
-
                 <div class="stat-card">
 
                     <div class="stat-top">
-
                         <div class="stat-icon">🔗</div>
-
                     </div>
 
                     <p>Shared Documents</p>
-
                     <h2 th:text="${sharedDocumentsCount}">0</h2>
-
                     <small>Documents shared with others</small>
 
-                    <a href="/shared-documents"
+                    <a th:href="@{/shared-documents}"
                        class="content-link">
-
                         Manage Shared Documents →
-
                     </a>
 
                 </div>
 
-
                 <!-- AUDIT EVENTS -->
-
                 <div class="stat-card">
 
                     <div class="stat-top">
-
                         <div class="stat-icon">📋</div>
-
                     </div>
 
                     <p>Audit Events</p>
-
                     <h2 th:text="${totalAuditEvents}">0</h2>
-
                     <small>Recorded activity events</small>
 
-                    <a href="/audit-trail"
+                    <a th:href="@{/audit-trail}"
                        class="content-link">
-
                         View Audit Trail →
-
                     </a>
 
                 </div>
 
             </section>
 
-
             <!-- DOCUMENTS AND ACTIVITY -->
-
             <div class="columns">
 
-
                 <!-- LEFT COLUMN -->
-
                 <section>
 
-
                     <!-- RECENT DOCUMENTS -->
-
                     <div class="panel">
 
                         <div class="panel-header">
-
                             <h3>Recent Documents</h3>
 
-                            <a href="/documents">
+                            <a th:href="@{/documents}">
                                 View all →
                             </a>
-
                         </div>
 
-
                         <!-- DOCUMENT LIST -->
-
                         <div th:if="${documents != null and !documents.isEmpty()}">
 
                             <div class="document"
@@ -706,111 +649,80 @@ footer {
                                 <div class="file-icon">📄</div>
 
                                 <div class="doc-info">
-
-                                    <strong
-                                        th:text="${document.fileName}">
+                                    <strong th:text="${document.fileName}">
                                         Document Name
                                     </strong>
 
-                                    <small>
-                                        Your secure document
-                                    </small>
-
+                                    <small>Your secure document</small>
                                 </div>
 
-                                <span class="status">
-                                    Stored
-                                </span>
+                                <span class="status">Stored</span>
 
                             </div>
 
                         </div>
 
-
                         <!-- EMPTY DOCUMENT LIST -->
-
                         <div th:if="${documents == null or documents.isEmpty()}">
 
                             <div class="empty-message">
-
                                 No documents uploaded yet.
                                 Upload a document to get started.
-
                             </div>
 
                         </div>
 
-
-                        <a href="/documents"
+                        <a th:href="@{/documents}"
                            class="primary-btn"
                            style="margin-top:18px">
-
                             Open Document Manager →
-
                         </a>
 
                     </div>
 
-
-
                     <!-- RECENT ACTIVITY -->
-
                     <div class="panel">
 
                         <div class="panel-header">
-
                             <h3>Recent Activity</h3>
 
-                            <a href="/audit-trail">
+                            <a th:href="@{/audit-trail}">
                                 View all →
                             </a>
-
                         </div>
 
-
                         <!-- ACTIVITY LIST -->
-
                         <div th:if="${auditLogs != null and !auditLogs.isEmpty()}">
 
                             <div class="activity"
                                  th:each="log : ${auditLogs}">
 
-                                <div class="activity-icon">
-                                    📋
-                                </div>
+                                <div class="activity-icon">📋</div>
 
                                 <div>
 
                                     <p>
-
-                                        <strong
-                                            th:text="${log.action}">
+                                        <strong th:text="${log.action}">
                                             Action
                                         </strong>
 
                                         -
 
-                                        <span
-                                            th:text="${log.documentName}">
+                                        <span th:text="${log.documentName}">
                                             Document
                                         </span>
-
                                     </p>
 
                                     <small>
-
-                                        <span
-                                            th:text="${log.username}">
+                                        <span th:text="${log.username}">
                                             User
                                         </span>
 
                                         &nbsp;|&nbsp;
 
-                                        <span
-                                            th:text="${log.timestamp}">
+                                        <span th:text="${log.timestamp}">
                                             Time
                                         </span>
-
                                     </small>
 
                                 </div>
@@ -819,15 +731,11 @@ footer {
 
                         </div>
 
-
                         <!-- EMPTY ACTIVITY -->
-
                         <div th:if="${auditLogs == null or auditLogs.isEmpty()}">
 
                             <div class="empty-message">
-
                                 No activity recorded yet.
-
                             </div>
 
                         </div>
@@ -836,65 +744,44 @@ footer {
 
                 </section>
 
-
-
                 <!-- RIGHT COLUMN -->
-
                 <section>
 
-
                     <!-- SECURITY -->
-
                     <div class="security-card">
 
                         <div class="shield">🛡️</div>
 
-                        <h3>Security & Access</h3>
+                        <h3>Security &amp; Access</h3>
 
                         <p>
-
                             Manage who can access your documents.
                             Review permissions and revoke access
                             when required.
-
                         </p>
 
                         <div class="security-label">
-
                             Access control workspace
-
                         </div>
 
                     </div>
 
-
-
                     <!-- QUICK ACTIONS -->
-
-                    <div class="panel"
-                         style="margin-top:22px">
+                    <div class="panel" style="margin-top:22px">
 
                         <div class="panel-header">
-
                             <h3>Quick Actions</h3>
-
                         </div>
 
-
                         <!-- DOCUMENTS -->
-
                         <div class="activity">
 
-                            <div class="activity-icon">
-                                📤
-                            </div>
+                            <div class="activity-icon">📤</div>
 
                             <div class="doc-info">
 
                                 <p>
-                                    <strong>
-                                        Manage Documents
-                                    </strong>
+                                    <strong>Manage Documents</strong>
                                 </p>
 
                                 <small>
@@ -902,36 +789,25 @@ footer {
                                 </small>
 
                                 <p>
-
-                                    <a href="/documents"
+                                    <a th:href="@{/documents}"
                                        class="content-link">
-
                                         Open documents →
-
                                     </a>
-
                                 </p>
 
                             </div>
 
                         </div>
 
-
-
                         <!-- SHARED ACCESS -->
-
                         <div class="activity">
 
-                            <div class="activity-icon">
-                                🔐
-                            </div>
+                            <div class="activity-icon">🔐</div>
 
                             <div class="doc-info">
 
                                 <p>
-                                    <strong>
-                                        Review Access
-                                    </strong>
+                                    <strong>Review Access</strong>
                                 </p>
 
                                 <small>
@@ -939,36 +815,25 @@ footer {
                                 </small>
 
                                 <p>
-
-                                    <a href="/shared-documents"
+                                    <a th:href="@{/shared-documents}"
                                        class="content-link">
-
                                         Manage access →
-
                                     </a>
-
                                 </p>
 
                             </div>
 
                         </div>
 
-
-
                         <!-- AUDIT TRAIL -->
-
                         <div class="activity">
 
-                            <div class="activity-icon">
-                                📋
-                            </div>
+                            <div class="activity-icon">📋</div>
 
                             <div class="doc-info">
 
                                 <p>
-                                    <strong>
-                                        Audit Trail
-                                    </strong>
+                                    <strong>Audit Trail</strong>
                                 </p>
 
                                 <small>
@@ -976,14 +841,36 @@ footer {
                                 </small>
 
                                 <p>
-
-                                    <a href="/audit-trail"
+                                    <a th:href="@{/audit-trail}"
                                        class="content-link">
-
                                         View activity →
-
                                     </a>
+                                </p>
 
+                            </div>
+
+                        </div>
+
+                        <!-- PROFILE QUICK ACTION -->
+                        <div class="activity">
+
+                            <div class="activity-icon">👤</div>
+
+                            <div class="doc-info">
+
+                                <p>
+                                    <strong>My Profile</strong>
+                                </p>
+
+                                <small>
+                                    View your account information
+                                </small>
+
+                                <p>
+                                    <a th:href="@{/profile}"
+                                       class="content-link">
+                                        View profile →
+                                    </a>
                                 </p>
 
                             </div>
@@ -998,13 +885,9 @@ footer {
 
         </div>
 
-
         <!-- FOOTER -->
-
         <footer>
-
             © 2026 TrustVault · Your documents. Your control.
-
         </footer>
 
     </main>
@@ -1012,5 +895,4 @@ footer {
 </div>
 
 </body>
-
 </html>

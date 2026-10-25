@@ -1,4 +1,3 @@
-
 package com.trustvault.entity;
 
 import jakarta.persistence.Entity;
@@ -29,7 +28,7 @@ public class AuditLog {
     }
 
     public AuditLog(String username, String action,
-                   String documentName) {
+                    String documentName) {
         this.username = username;
         this.action = action;
         this.documentName = documentName;
@@ -42,6 +41,11 @@ public class AuditLog {
 
     public String getUsername() {
         return username;
+    }
+
+    // Added setter to anonymize historical audit records
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getAction() {
