@@ -7,8 +7,10 @@ import com.trustvault.repository.DocumentShareRepository;
 import com.trustvault.repository.DocumentRepository;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class DocumentShareService {
@@ -25,6 +27,7 @@ public class DocumentShareService {
     }
 
     // Share a document
+    @Transactional
     public DocumentShare shareDocument(
             Long documentId,
             String sharedBy,
@@ -41,16 +44,16 @@ public class DocumentShareService {
                     "Owner email is required.");
         }
 
-        if (permission == null) {
+        if (permission == null || permission.isBlank()) {
             throw new IllegalArgumentException(
                     "Sharing permission is required.");
         }
 
-        sharedBy = sharedBy.trim();
-        sharedWith = sharedWith.trim();
-        permission = permission.trim().toUpperCase();
+        sharedBy = sharedBy.trim().toLowerCase(Locale.ROOT);
+        sharedWith = sharedWith.trim().toLowerCase(Locale.ROOT);
+        permission = permission.trim().toUpperCase(Locale.ROOT);
 
-        if (sharedBy.equalsIgnoreCase(sharedWith)) {
+        if (sharedBy.equals(sharedWith)) {
             throw new IllegalArgumentException(
                     "You cannot share a document with yourself.");
         }
@@ -62,55 +65,56 @@ public class DocumentShareService {
                     "Invalid sharing permission.");
         }
 
-        // Find document
         Document document = documentRepository.findById(documentId)
                 .orElseThrow(() ->
                         new IllegalArgumentException(
                                 "Document not found."));
 
-        // Verify document owner
+        // Only the document owner can share it.
         if (document.getOwnerEmail() == null
-                || !document.getOwnerEmail()
-                        .equalsIgnoreCase(sharedBy)) {
+                || !document.getOwnerEmail().equalsIgnoreCase(sharedBy)) {
 
             throw new IllegalArgumentException(
                     "You can share only your own documents.");
         }
 
-        // Create sharing permission
         DocumentShare documentShare = new DocumentShare(
                 documentId,
                 sharedBy,
                 sharedWith,
-                permission
-        );
+                permission);
 
         return documentShareRepository.save(documentShare);
     }
 
-    // Get documents shared by a user
+    // Documents shared by this user
     public List<DocumentShare> getSharedByUser(String username) {
 
-        return documentShareRepository.findBySharedBy(username);
+        return documentShareRepository
+                .findBySharedByIgnoreCase(username.trim());
     }
 
-    // Get documents shared with a user
+    // Documents shared with this user
     public List<DocumentShare> getSharedWithUser(String username) {
 
-        return documentShareRepository.findBySharedWith(username);
+        return documentShareRepository
+                .findBySharedWithIgnoreCase(username.trim());
     }
 
-    // Get all shared documents
+    // All sharing records
     public List<DocumentShare> getAllShares() {
 
         return documentShareRepository.findAll();
     }
 
-    // Revoke sharing permission
+    // Revoke only a share created by the current owner
+    @Transactional
     public void revokeShare(Long shareId, String username) {
 
         DocumentShare share = documentShareRepository
-                .findByIdAndSharedBy(shareId, username)
+                .findByIdAndSharedByIgnoreCase(
+                        shareId,
+                        username.trim())
                 .orElseThrow(() ->
                         new IllegalArgumentException(
                                 "You cannot revoke this sharing permission."));
@@ -118,14 +122,15 @@ public class DocumentShareService {
         documentShareRepository.delete(share);
     }
 
-    // Get shared document after checking recipient permission
-    // Allows VIEW and DOWNLOAD permissions
+    // Get a shared document for VIEW or DOWNLOAD permission
     public Document getSharedDocument(
             Long shareId,
             String username) {
 
         DocumentShare share = documentShareRepository
-                .findByIdAndSharedWith(shareId, username)
+                .findByIdAndSharedWithIgnoreCase(
+                        shareId,
+                        username.trim())
                 .orElseThrow(() ->
                         new IllegalArgumentException(
                                 "Sharing permission not found or access denied."));
@@ -139,51 +144,40 @@ public class DocumentShareService {
                     "You do not have permission to view this document.");
         }
 
-        // Find document
-        Document document = documentRepository
-                .findById(share.getDocumentId())
-                .orElseThrow(() ->
-                        new IllegalArgumentException(
-                                "Shared document not found."));
-
-        // Verify document owner
-        if (document.getOwnerEmail() == null
-                || !document.getOwnerEmail()
-                        .equalsIgnoreCase(share.getSharedBy())) {
-
-            throw new IllegalArgumentException(
-                    "Document owner verification failed.");
-        }
-
-        return document;
+        return findAndVerifyDocument(share);
     }
 
-    // Get shared document for DOWNLOAD permission only
+    // Get a shared document for DOWNLOAD permission only
     public Document getSharedDocumentForDownload(
             Long shareId,
             String username) {
 
         DocumentShare share = documentShareRepository
-                .findByIdAndSharedWith(shareId, username)
+                .findByIdAndSharedWithIgnoreCase(
+                        shareId,
+                        username.trim())
                 .orElseThrow(() ->
                         new IllegalArgumentException(
                                 "Sharing permission not found or access denied."));
 
-        // Only DOWNLOAD permission is allowed
         if (!"DOWNLOAD".equalsIgnoreCase(share.getPermission())) {
 
             throw new IllegalArgumentException(
                     "You do not have permission to download this document.");
         }
 
-        // Find document
+        return findAndVerifyDocument(share);
+    }
+
+    // Verify the document exists and belongs to the sharing owner
+    private Document findAndVerifyDocument(DocumentShare share) {
+
         Document document = documentRepository
                 .findById(share.getDocumentId())
                 .orElseThrow(() ->
                         new IllegalArgumentException(
                                 "Shared document not found."));
 
-        // Verify document owner
         if (document.getOwnerEmail() == null
                 || !document.getOwnerEmail()
                         .equalsIgnoreCase(share.getSharedBy())) {

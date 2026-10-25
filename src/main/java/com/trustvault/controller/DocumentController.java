@@ -2,12 +2,14 @@
 package com.trustvault.controller;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import org.springframework.web.server.ResponseStatusException;
 
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,7 +38,6 @@ import com.trustvault.service.AuditLogService;
 public class DocumentController {
 
     private final DocumentService documentService;
-
     private final AuditLogService auditLogService;
 
     public DocumentController(
@@ -64,10 +64,8 @@ public class DocumentController {
             RedirectAttributes redirectAttributes) {
 
         try {
-
             Document document = documentService.uploadFile(
-                    file,
-                    getUsername());
+                    file, getUsername());
 
             auditLogService.logAction(
                     getUsername(),
@@ -88,7 +86,7 @@ public class DocumentController {
 
             redirectAttributes.addFlashAttribute(
                     "errorMessage",
-                    "Unable to upload document.");
+                    "Unable to upload document. Please try again.");
         }
 
         return "redirect:/documents";
@@ -101,20 +99,13 @@ public class DocumentController {
             RedirectAttributes redirectAttributes) {
 
         try {
-
-            // Check document ownership
             Document document = documentService.getDocument(
-                    id,
-                    getUsername());
+                    id, getUsername());
 
             String documentName = document.getFileName();
 
-            // Delete document
-            documentService.deleteDocument(
-                    id,
-                    getUsername());
+            documentService.deleteDocument(id, getUsername());
 
-            // Save audit log
             auditLogService.logAction(
                     getUsername(),
                     "DELETE",
@@ -140,63 +131,38 @@ public class DocumentController {
 
             redirectAttributes.addFlashAttribute(
                     "errorMessage",
-                    "Unable to delete document.");
+                    "Unable to delete document. Please try again.");
         }
 
         return "redirect:/documents";
     }
 
-    // Download document
+    // Download original document after decryption
     @GetMapping("/documents/download/{id}")
     public ResponseEntity<Resource> downloadDocument(
             @PathVariable Long id) {
 
+        return serveDocument(id, false);
+    }
+
+    // View PDF or image in the browser
+    @GetMapping("/documents/view/{id}")
+    public ResponseEntity<Resource> viewDocument(
+            @PathVariable Long id) {
+
+        return serveDocument(id, true);
+    }
+
+    // Shared file-serving logic for view and download
+    private ResponseEntity<Resource> serveDocument(
+            Long id, boolean inline) {
+
+        String username = getUsername();
+        Document document;
+
+        // Check ownership before reading the file
         try {
-
-            // Check document ownership
-            Document document = documentService.getDocument(
-                    id,
-                    getUsername());
-
-            // Get encrypted file path
-            Path filePath =
-                    Path.of(document.getStoragePath());
-
-            // Read encrypted file
-            byte[] encryptedData =
-                    Files.readAllBytes(filePath);
-
-            // Decrypt file
-            byte[] decryptedData =
-                    FileEncryptionUtil.decrypt(encryptedData);
-
-            // Prepare downloadable resource
-            Resource resource =
-                    new ByteArrayResource(decryptedData);
-
-            String contentType = document.getContentType();
-
-            if (contentType == null
-                    || contentType.isBlank()) {
-
-                contentType = "application/octet-stream";
-            }
-
-            // Save audit log
-            auditLogService.logAction(
-                    getUsername(),
-                    "DOWNLOAD",
-                    document.getFileName());
-
-            return ResponseEntity.ok()
-                    .contentType(
-                            MediaType.parseMediaType(contentType))
-                    .header(
-                            HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=\""
-                                    + document.getFileName()
-                                    + "\"")
-                    .body(resource);
+            document = documentService.getDocument(id, username);
 
         } catch (SecurityException exception) {
 
@@ -209,12 +175,94 @@ public class DocumentController {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
                     "Document not found.");
+        }
 
-        } catch (IOException exception) {
+        String contentType = document.getContentType();
+
+        if (contentType == null || contentType.isBlank()) {
+            contentType = "application/octet-stream";
+        }
+
+        MediaType mediaType;
+
+        try {
+            mediaType = MediaType.parseMediaType(contentType);
+        } catch (IllegalArgumentException exception) {
+            mediaType = MediaType.APPLICATION_OCTET_STREAM;
+        }
+
+        // Only allow safe document types for browser preview
+        if (inline) {
+            String fileName = document.getFileName() == null
+                    ? ""
+                    : document.getFileName().toLowerCase();
+
+            boolean previewable =
+                    fileName.endsWith(".pdf")
+                    || fileName.endsWith(".png")
+                    || fileName.endsWith(".jpg")
+                    || fileName.endsWith(".jpeg");
+
+            if (!previewable) {
+                throw new ResponseStatusException(
+                        HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+                        "Preview is available for PDF and image files only.");
+            }
+
+            // Use a controlled media type rather than trusting uploaded
+            // content-type metadata.
+            if (fileName.endsWith(".pdf")) {
+                mediaType = MediaType.APPLICATION_PDF;
+            } else if (fileName.endsWith(".png")) {
+                mediaType = MediaType.IMAGE_PNG;
+            } else {
+                mediaType = MediaType.IMAGE_JPEG;
+            }
+        }
+
+        Path filePath = Path.of(document.getStoragePath());
+
+        if (!Files.isRegularFile(filePath)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Stored document file was not found.");
+        }
+
+        byte[] decryptedData;
+
+        try {
+            byte[] encryptedData = Files.readAllBytes(filePath);
+            decryptedData = FileEncryptionUtil.decrypt(encryptedData);
+
+        } catch (IOException | RuntimeException exception) {
 
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unable to download file.");
+                    "Unable to read or decrypt the document.");
         }
+
+        // Record activity only after the file has been read and decrypted
+        auditLogService.logAction(
+                username,
+                inline ? "VIEW" : "DOWNLOAD",
+                document.getFileName());
+
+        Resource resource = new ByteArrayResource(decryptedData);
+
+        String fileName = document.getFileName() == null
+                ? "document"
+                : document.getFileName();
+
+        ContentDisposition disposition =
+                ContentDisposition.builder(inline ? "inline" : "attachment")
+                        .filename(fileName, StandardCharsets.UTF_8)
+                        .build();
+
+        return ResponseEntity.ok()
+                .contentType(mediaType)
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        disposition.toString())
+                .body(resource);
     }
 }

@@ -1,7 +1,5 @@
-
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,20 +42,31 @@
             color: #818cf8;
         }
 
-        .nav a {
+        .nav a,
+        .nav-logout {
             display: block;
+            width: 100%;
             color: #a6b1c8;
+            text-align: left;
             text-decoration: none;
             padding: 14px;
             margin-bottom: 10px;
             border-radius: 10px;
             transition: 0.3s;
+            font-size: 14px;
         }
 
         .nav a:hover,
-        .nav a.active {
+        .nav a.active,
+        .nav-logout:hover {
             background: #252d4b;
             color: white;
+        }
+
+        .nav-logout {
+            background: transparent;
+            border: none;
+            cursor: pointer;
         }
 
         .main {
@@ -106,6 +115,7 @@
             border: 1px solid #27334d;
             border-radius: 16px;
             padding: 23px;
+            min-width: 0;
         }
 
         .stat-icon {
@@ -117,6 +127,7 @@
             font-size: 29px;
             font-weight: bold;
             margin-bottom: 8px;
+            overflow-wrap: anywhere;
         }
 
         .share-card {
@@ -150,6 +161,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            min-width: 0;
         }
 
         label {
@@ -191,28 +203,18 @@
             transition: 0.3s;
         }
 
-        .share-button:hover {
+        .share-button:hover,
+        .view-button:hover,
+        .download-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
         }
 
-        .message {
-            padding: 14px 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-
-        .success {
-            color: #6ee7b7;
-            background: #123b32;
-            border: 1px solid #236451;
-        }
-
-        .error {
-            color: #fda4af;
-            background: #3b1d2b;
-            border: 1px solid #713047;
+        .share-button:disabled,
+        .revoke-button:disabled,
+        .download-button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+            transform: none;
         }
 
         .documents-grid {
@@ -244,6 +246,7 @@
         .heading-icon {
             width: 42px;
             height: 42px;
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -343,13 +346,16 @@
             font-size: 11px;
         }
 
-        .view-form {
+        .action-row {
+            display: flex;
+            gap: 9px;
+            flex-wrap: wrap;
             margin-top: 15px;
         }
 
-        .view-button {
+        .view-button,
+        .download-button {
             display: inline-block;
-            background: linear-gradient(135deg, #2563eb, #6366f1);
             border: none;
             border-radius: 8px;
             padding: 10px 15px;
@@ -359,31 +365,21 @@
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
+        }
+
+        .view-button {
+            background: linear-gradient(135deg, #2563eb, #6366f1);
         }
 
         .view-button:hover {
-            transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
         }
 
-        /* Download button */
-
         .download-button {
-            display: inline-block;
             background: linear-gradient(135deg, #059669, #10b981);
-            border: none;
-            border-radius: 8px;
-            padding: 10px 15px;
-            color: white;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
         }
 
         .download-button:hover {
-            transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
         }
 
@@ -439,6 +435,84 @@
             line-height: 1.7;
         }
 
+        /* Toast messages */
+        .toast-container {
+            position: fixed;
+            top: 22px;
+            right: 22px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: min(390px, calc(100vw - 28px));
+        }
+
+        .toast {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 15px 16px;
+            border-radius: 12px;
+            box-shadow: 0 14px 38px #0008;
+            border: 1px solid;
+            color: #f8fafc;
+            animation: toastIn 0.22s ease-out;
+        }
+
+        .toast.success {
+            background: #10352d;
+            border-color: #23765f;
+        }
+
+        .toast.error {
+            background: #3b1d2b;
+            border-color: #a33c55;
+        }
+
+        .toast.info {
+            background: #172554;
+            border-color: #3b82f6;
+        }
+
+        .toast-symbol {
+            font-size: 18px;
+            line-height: 1.2;
+        }
+
+        .toast-text {
+            flex: 1;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .toast-close {
+            border: 0;
+            background: transparent;
+            color: #cbd5e1;
+            font-size: 19px;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .toast.hide {
+            opacity: 0;
+            transform: translateX(12px);
+            transition: 0.25s ease;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         @media (max-width: 1100px) {
             .share-form {
                 grid-template-columns: 1fr;
@@ -484,7 +558,9 @@
                 flex-wrap: wrap;
             }
 
-            .nav a {
+            .nav a,
+            .nav-logout {
+                width: auto;
                 padding: 10px;
                 margin-bottom: 0;
                 font-size: 13px;
@@ -509,16 +585,40 @@
             .share-list {
                 padding: 8px 14px;
             }
+
+            .toast-container {
+                top: 12px;
+                right: 14px;
+            }
         }
     </style>
 </head>
 
 <body>
 
+<!-- Toast messages -->
+<div class="toast-container"
+     id="toastContainer"
+     aria-live="polite"
+     aria-atomic="false">
+</div>
+
+<!-- Controller flash messages -->
+<div id="serverSuccessMessage"
+     th:if="${successMessage != null}"
+     th:text="${successMessage}"
+     hidden>
+</div>
+
+<div id="serverErrorMessage"
+     th:if="${errorMessage != null}"
+     th:text="${errorMessage}"
+     hidden>
+</div>
+
 <div class="layout">
 
     <!-- Sidebar -->
-
     <aside class="sidebar">
 
         <div class="logo">
@@ -527,35 +627,33 @@
 
         <nav class="nav">
 
-            <a href="/dashboard">
+            <a th:href="@{/dashboard}">
                 ▦ &nbsp; Dashboard
             </a>
 
-            <a href="/documents">
+            <a th:href="@{/documents}">
                 ▤ &nbsp; Documents
             </a>
 
-            <a href="/shared-documents" class="active">
+            <a th:href="@{/shared-documents}" class="active">
                 🔗 &nbsp; Shared Access
             </a>
 
-            <a href="/audit-trail">
+            <a th:href="@{/audit-trail}">
                 ◷ &nbsp; Audit Trail
             </a>
 
-            <a href="/logout">
-                ⇥ &nbsp; Sign Out
-            </a>
+            <form th:action="@{/logout}" method="post" style="margin:0">
+                <button type="submit" class="nav-logout">
+                    ⇥ &nbsp; Sign Out
+                </button>
+            </form>
 
         </nav>
-
     </aside>
 
-    <!-- Main -->
-
+    <!-- Main content -->
     <main class="main">
-
-        <!-- Header -->
 
         <div class="topbar">
 
@@ -573,24 +671,10 @@
 
         </div>
 
-        <!-- Messages -->
-
-        <div th:if="${message != null}"
-             class="message success"
-             th:text="${message}">
-        </div>
-
-        <div th:if="${error != null}"
-             class="message error"
-             th:text="${error}">
-        </div>
-
         <!-- Statistics -->
-
         <section class="stats">
 
             <div class="stat-card">
-
                 <div class="stat-icon">📤</div>
 
                 <div class="stat-number"
@@ -598,14 +682,10 @@
                     0
                 </div>
 
-                <p class="muted">
-                    Documents Shared By Me
-                </p>
-
+                <p class="muted">Documents Shared By Me</p>
             </div>
 
             <div class="stat-card">
-
                 <div class="stat-icon">📥</div>
 
                 <div class="stat-number"
@@ -613,35 +693,23 @@
                     0
                 </div>
 
-                <p class="muted">
-                    Documents Shared With Me
-                </p>
-
+                <p class="muted">Documents Shared With Me</p>
             </div>
 
             <div class="stat-card">
-
                 <div class="stat-icon">🛡️</div>
 
-                <div class="stat-number">
-                    Protected
-                </div>
+                <div class="stat-number">Protected</div>
 
-                <p class="muted">
-                    Access Management
-                </p>
-
+                <p class="muted">Access Management</p>
             </div>
 
         </section>
 
-        <!-- Share document form -->
-
+        <!-- Share document -->
         <section class="share-card">
 
-            <h2 class="section-title">
-                🔗 Share a Document
-            </h2>
+            <h2 class="section-title">🔗 Share a Document</h2>
 
             <p class="section-description">
                 Enter a document ID, recipient email, and permission
@@ -650,13 +718,12 @@
 
             <form th:action="@{/share-document}"
                   method="post"
-                  class="share-form">
+                  class="share-form"
+                  id="shareForm">
 
                 <div class="form-group">
 
-                    <label for="documentId">
-                        Document ID
-                    </label>
+                    <label for="documentId">Document ID</label>
 
                     <input type="number"
                            id="documentId"
@@ -670,9 +737,7 @@
 
                 <div class="form-group">
 
-                    <label for="sharedWith">
-                        Recipient Email
-                    </label>
+                    <label for="sharedWith">Recipient Email</label>
 
                     <input type="email"
                            id="sharedWith"
@@ -685,27 +750,21 @@
 
                 <div class="form-group">
 
-                    <label for="permission">
-                        Permission
-                    </label>
+                    <label for="permission">Permission</label>
 
                     <select id="permission"
                             name="permission"
                             class="form-control"
                             required>
 
-                        <option value="VIEW">
-                            View
-                        </option>
-
-                        <option value="DOWNLOAD">
-                            Download
-                        </option>
+                        <option value="VIEW">View</option>
+                        <option value="DOWNLOAD">Download</option>
 
                     </select>
 
                     <button type="submit"
-                            class="share-button">
+                            class="share-button"
+                            id="shareButton">
                         + Share Document
                     </button>
 
@@ -715,25 +774,19 @@
 
         </section>
 
-        <!-- Documents lists -->
-
+        <!-- Document lists -->
         <section class="documents-grid">
 
             <!-- Shared with me -->
-
             <div class="documents-card">
 
                 <div class="documents-heading">
 
                     <div class="heading-row">
 
-                        <div class="heading-icon">
-                            📥
-                        </div>
+                        <div class="heading-icon">📥</div>
 
-                        <h2 class="section-title">
-                            Shared With Me
-                        </h2>
+                        <h2 class="section-title">Shared With Me</h2>
 
                         <span class="count-badge"
                               th:text="${sharedDocuments != null ? #lists.size(sharedDocuments) : 0}">
@@ -757,29 +810,20 @@
 
                             <div class="share-item-top">
 
-                                <div class="file-icon">
-                                    📄
-                                </div>
+                                <div class="file-icon">📄</div>
 
                                 <div class="share-info">
 
                                     <div class="share-title">
-
                                         Document ID:
-                                        <span th:text="${share.documentId}">
-                                            1
-                                        </span>
-
+                                        <span th:text="${share.documentId}">1</span>
                                     </div>
 
                                     <div class="share-subtitle">
-
                                         Shared by:
-
                                         <span th:text="${share.sharedBy}">
                                             user@example.com
                                         </span>
-
                                     </div>
 
                                 </div>
@@ -801,29 +845,25 @@
 
                             </div>
 
-                            <!-- View shared document -->
-
-                            <div class="view-form"
+                            <!-- Direct view link: no JavaScript fetch/Blob for viewing -->
+                            <div class="action-row"
                                  th:if="${share.permission == 'VIEW' or share.permission == 'DOWNLOAD'}">
 
-                                <a th:href="@{/shared-document/{shareId}(shareId=${share.id})}"
-                                   class="view-button"
+                                <a class="view-button"
+                                   th:href="@{/shared-document/{shareId}(shareId=${share.id})}"
                                    target="_blank"
                                    rel="noopener">
                                     VIEW DOCUMENT
                                 </a>
 
-                            </div>
-
-                            <!-- Download shared document -->
-
-                            <div class="view-form"
-                                 th:if="${share.permission == 'DOWNLOAD'}">
-
-                                <a th:href="@{/shared-document-download/{shareId}(shareId=${share.id})}"
-                                   class="download-button">
+                                <!-- Download is available only with DOWNLOAD permission -->
+                                <button type="button"
+                                        class="download-button shared-download-button"
+                                        th:if="${share.permission == 'DOWNLOAD'}"
+                                        th:attr="data-url=@{/shared-document-download/{shareId}(shareId=${share.id})},
+                                                 data-document-id=${share.documentId}">
                                     ⬇ DOWNLOAD DOCUMENT
-                                </a>
+                                </button>
 
                             </div>
 
@@ -835,9 +875,7 @@
 
                         <div class="empty">
 
-                            <div class="empty-icon">
-                                📂
-                            </div>
+                            <div class="empty-icon">📂</div>
 
                             <h3>No shared documents</h3>
 
@@ -854,20 +892,15 @@
             </div>
 
             <!-- Shared by me -->
-
             <div class="documents-card">
 
                 <div class="documents-heading">
 
                     <div class="heading-row">
 
-                        <div class="heading-icon">
-                            📤
-                        </div>
+                        <div class="heading-icon">📤</div>
 
-                        <h2 class="section-title">
-                            Shared By Me
-                        </h2>
+                        <h2 class="section-title">Shared By Me</h2>
 
                         <span class="count-badge"
                               th:text="${myShares != null ? #lists.size(myShares) : 0}">
@@ -891,30 +924,20 @@
 
                             <div class="share-item-top">
 
-                                <div class="file-icon">
-                                    📄
-                                </div>
+                                <div class="file-icon">📄</div>
 
                                 <div class="share-info">
 
                                     <div class="share-title">
-
                                         Document ID:
-
-                                        <span th:text="${share.documentId}">
-                                            1
-                                        </span>
-
+                                        <span th:text="${share.documentId}">1</span>
                                     </div>
 
                                     <div class="share-subtitle">
-
                                         Shared with:
-
                                         <span th:text="${share.sharedWith}">
                                             recipient@example.com
                                         </span>
-
                                     </div>
 
                                 </div>
@@ -936,12 +959,10 @@
 
                             </div>
 
-                            <!-- Revoke -->
-
+                            <!-- Revoke sharing -->
                             <form th:action="@{/revoke-share}"
                                   method="post"
-                                  class="revoke-form"
-                                  onsubmit="return confirm('Are you sure you want to revoke this share?');">
+                                  class="revoke-form">
 
                                 <input type="hidden"
                                        name="shareId"
@@ -962,9 +983,7 @@
 
                         <div class="empty">
 
-                            <div class="empty-icon">
-                                🔗
-                            </div>
+                            <div class="empty-icon">🔗</div>
 
                             <h3>No shared documents</h3>
 
@@ -982,22 +1001,232 @@
 
         </section>
 
-        <!-- Security note -->
-
+        <!-- Security reminder -->
         <div class="security-note">
 
             🛡️ <strong>Security reminder:</strong>
 
             Sharing records show the selected recipient and permission.
-            Make sure document ownership, recipient verification,
-            permission checks, and secure download authorization are
-            enforced on the server before sharing sensitive files.
+            Document ownership, recipient verification, permission checks,
+            and download authorization must be enforced on the server.
 
         </div>
 
     </main>
 
 </div>
+
+<script>
+    const toastContainer = document.getElementById("toastContainer");
+
+    // Display a toast notification.
+    function showToast(message, type = "success", duration = 4500) {
+
+        if (!message) {
+            return;
+        }
+
+        const toast = document.createElement("div");
+        toast.className = "toast " + type;
+
+        const symbol = document.createElement("span");
+        symbol.className = "toast-symbol";
+
+        symbol.textContent =
+            type === "success" ? "✓" :
+            type === "error" ? "!" : "ℹ";
+
+        const text = document.createElement("div");
+        text.className = "toast-text";
+        text.textContent = message;
+
+        const close = document.createElement("button");
+        close.className = "toast-close";
+        close.type = "button";
+        close.setAttribute("aria-label", "Close notification");
+        close.textContent = "×";
+
+        close.addEventListener("click", function () {
+            dismissToast(toast);
+        });
+
+        toast.append(symbol, text, close);
+        toastContainer.appendChild(toast);
+
+        toast.dataset.timer = String(
+            window.setTimeout(function () {
+                dismissToast(toast);
+            }, duration)
+        );
+    }
+
+    function dismissToast(toast) {
+
+        if (!toast || toast.classList.contains("hide")) {
+            return;
+        }
+
+        window.clearTimeout(Number(toast.dataset.timer));
+        toast.classList.add("hide");
+
+        window.setTimeout(function () {
+            toast.remove();
+        }, 300);
+    }
+
+    // Show messages sent by the Spring controller.
+    const serverSuccess =
+        document.getElementById("serverSuccessMessage");
+
+    const serverError =
+        document.getElementById("serverErrorMessage");
+
+    if (serverSuccess && serverSuccess.textContent.trim()) {
+        showToast(serverSuccess.textContent.trim(), "success");
+    }
+
+    if (serverError && serverError.textContent.trim()) {
+        showToast(serverError.textContent.trim(), "error", 6000);
+    }
+
+    // Prevent duplicate submissions while sharing.
+    const shareForm = document.getElementById("shareForm");
+    const shareButton = document.getElementById("shareButton");
+
+    shareForm.addEventListener("submit", function (event) {
+
+        if (!shareForm.checkValidity()) {
+            return;
+        }
+
+        shareButton.disabled = true;
+        shareButton.textContent = "Sharing...";
+    });
+
+    // Get the filename from the download response headers.
+    function getFileName(contentDisposition, fallback) {
+
+        let match = contentDisposition.match(
+            /filename\*=UTF-8''([^;]+)/i
+        );
+
+        if (match && match[1]) {
+            try {
+                return decodeURIComponent(match[1].replace(/["']/g, ""));
+            } catch (error) {
+                // Fall back to the default filename.
+            }
+        }
+
+        match = contentDisposition.match(/filename="?([^";]+)"?/i);
+
+        return match && match[1] ? match[1] : fallback;
+    }
+
+    // Download a shared document.
+    document.querySelectorAll(".shared-download-button")
+        .forEach(function (button) {
+
+            button.addEventListener("click", async function () {
+
+                const originalText = button.textContent;
+
+                button.disabled = true;
+                button.textContent = "Preparing...";
+
+                try {
+                    const response = await fetch(button.dataset.url, {
+                        method: "GET",
+                        credentials: "same-origin"
+                    });
+
+                    if (!response.ok) {
+
+                        if (response.status === 403) {
+                            throw new Error(
+                                "You are not authorized to download this document."
+                            );
+                        }
+
+                        if (response.status === 404) {
+                            throw new Error(
+                                "Document or sharing permission was not found."
+                            );
+                        }
+
+                        throw new Error(
+                            "Server error (" + response.status + ")."
+                        );
+                    }
+
+                    const blob = await response.blob();
+
+                    const fileName = getFileName(
+                        response.headers.get("Content-Disposition") || "",
+                        "shared-document-" + button.dataset.documentId
+                    );
+
+                    const objectUrl = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+
+                    link.href = objectUrl;
+                    link.download = fileName;
+
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+
+                    window.setTimeout(function () {
+                        URL.revokeObjectURL(objectUrl);
+                    }, 60000);
+
+                    showToast(
+                        "Download started: " + fileName,
+                        "success"
+                    );
+
+                } catch (error) {
+
+                    showToast(
+                        "Download failed: " + error.message,
+                        "error",
+                        6500
+                    );
+
+                } finally {
+
+                    button.disabled = false;
+                    button.textContent = originalText;
+                }
+
+            });
+        });
+
+    // Confirm revocation and prevent repeated submissions.
+    document.querySelectorAll(".revoke-form")
+        .forEach(function (form) {
+
+            form.addEventListener("submit", function (event) {
+
+                const confirmed = window.confirm(
+                    "Are you sure you want to revoke this share?"
+                );
+
+                if (!confirmed) {
+                    event.preventDefault();
+                    return;
+                }
+
+                const button =
+                    form.querySelector(".revoke-button");
+
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = "Revoking...";
+                }
+            });
+        });
+</script>
 
 </body>
 </html>

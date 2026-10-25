@@ -8,6 +8,7 @@ import com.trustvault.service.WordToPdfService;
 import com.trustvault.FileEncryptionUtil;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
@@ -15,6 +16,7 @@ import java.util.Locale;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +35,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import org.springframework.web.server.ResponseStatusException;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @Controller
 public class DocumentShareController {
+
+    private static final Logger LOGGER =
+            Logger.getLogger(DocumentShareController.class.getName());
 
     private final DocumentShareService documentShareService;
     private final AuditLogService auditLogService;
@@ -60,13 +70,11 @@ public class DocumentShareController {
 
         model.addAttribute(
                 "sharedDocuments",
-                documentShareService.getSharedWithUser(username)
-        );
+                documentShareService.getSharedWithUser(username));
 
         model.addAttribute(
                 "myShares",
-                documentShareService.getSharedByUser(username)
-        );
+                documentShareService.getSharedByUser(username));
 
         return "shared-documents";
     }
@@ -77,16 +85,42 @@ public class DocumentShareController {
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam Long documentId,
             @RequestParam String sharedWith,
-            @RequestParam String permission) {
+            @RequestParam String permission,
+            RedirectAttributes redirectAttributes) {
 
         String sharedBy = userDetails.getUsername();
 
-        documentShareService.shareDocument(
-                documentId,
-                sharedBy,
-                sharedWith,
-                permission
-        );
+        try {
+            documentShareService.shareDocument(
+                    documentId,
+                    sharedBy,
+                    sharedWith,
+                    permission);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Document shared successfully with "
+                            + sharedWith.trim() + "!");
+
+        } catch (IllegalArgumentException | SecurityException exception) {
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    exception.getMessage() != null
+                            ? exception.getMessage()
+                            : "Unable to share document.");
+
+        } catch (RuntimeException exception) {
+
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Document sharing failed for user: " + sharedBy,
+                    exception);
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unable to share document. Please try again.");
+        }
 
         return "redirect:/shared-documents";
     }
@@ -95,14 +129,39 @@ public class DocumentShareController {
     @PostMapping("/revoke-share")
     public String revokeShare(
             @AuthenticationPrincipal UserDetails userDetails,
-            @RequestParam Long shareId) {
+            @RequestParam Long shareId,
+            RedirectAttributes redirectAttributes) {
 
         String username = userDetails.getUsername();
 
-        documentShareService.revokeShare(
-                shareId,
-                username
-        );
+        try {
+            documentShareService.revokeShare(
+                    shareId,
+                    username);
+
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "Sharing access revoked successfully!");
+
+        } catch (IllegalArgumentException | SecurityException exception) {
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    exception.getMessage() != null
+                            ? exception.getMessage()
+                            : "Unable to revoke sharing access.");
+
+        } catch (RuntimeException exception) {
+
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Share revocation failed for user: " + username,
+                    exception);
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "Unable to revoke sharing access. Please try again.");
+        }
 
         return "redirect:/shared-documents";
     }
@@ -114,23 +173,23 @@ public class DocumentShareController {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         try {
-
             String username = userDetails.getUsername();
 
-            // Verify recipient and VIEW or DOWNLOAD permission
+            // Verify recipient and VIEW permission
             Document document =
                     documentShareService.getSharedDocument(
                             shareId,
-                            username
-                    );
+                            username);
 
-            // Read encrypted file
             Path filePath = Path.of(document.getStoragePath());
 
-            byte[] encryptedData =
-                    Files.readAllBytes(filePath);
+            if (!Files.isRegularFile(filePath)) {
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Shared document file was not found.");
+            }
 
-            // Decrypt file
+            byte[] encryptedData = Files.readAllBytes(filePath);
             byte[] decryptedData =
                     FileEncryptionUtil.decrypt(encryptedData);
 
@@ -149,103 +208,73 @@ public class DocumentShareController {
             if (lowerFileName.endsWith(".docx")) {
 
                 decryptedData =
-                        wordToPdfService.convertDocxToPdf(
-                                decryptedData
-                        );
+                        wordToPdfService.convertDocxToPdf(decryptedData);
 
                 fileName = fileName.substring(
-                        0,
-                        fileName.length() - 5
-                ) + ".pdf";
+                        0, fileName.length() - 5) + ".pdf";
 
                 contentType = "application/pdf";
             }
 
-            // PDF files
+            // Supported browser preview types
             else if (lowerFileName.endsWith(".pdf")) {
-
                 contentType = "application/pdf";
-            }
-
-            // JPG images
-            else if (lowerFileName.endsWith(".jpg")
+            } else if (lowerFileName.endsWith(".jpg")
                     || lowerFileName.endsWith(".jpeg")) {
-
                 contentType = "image/jpeg";
-            }
-
-            // PNG images
-            else if (lowerFileName.endsWith(".png")) {
-
+            } else if (lowerFileName.endsWith(".png")) {
                 contentType = "image/png";
-            }
-
-            // GIF images
-            else if (lowerFileName.endsWith(".gif")) {
-
+            } else if (lowerFileName.endsWith(".gif")) {
                 contentType = "image/gif";
-            }
-
-            // TXT files
-            else if (lowerFileName.endsWith(".txt")) {
-
+            } else if (lowerFileName.endsWith(".txt")) {
                 contentType = "text/plain";
-            }
-
-            // Unsupported preview file type
-            else {
-
+            } else {
                 throw new ResponseStatusException(
                         HttpStatus.UNSUPPORTED_MEDIA_TYPE,
-                        "Preview is not supported for this file type."
-                );
+                        "Preview is not supported for this file type.");
             }
 
-            Resource resource =
-                    new ByteArrayResource(decryptedData);
+            Resource resource = new ByteArrayResource(decryptedData);
 
-            // Audit Trail
             auditLogService.logAction(
                     username,
                     "VIEW",
-                    document.getFileName()
-            );
+                    document.getFileName());
 
-            // Open document in browser
+            ContentDisposition disposition =
+                    ContentDisposition.inline()
+                            .filename(fileName, StandardCharsets.UTF_8)
+                            .build();
+
             return ResponseEntity.ok()
-                    .contentType(
-                            MediaType.parseMediaType(contentType)
-                    )
+                    .contentType(MediaType.parseMediaType(contentType))
                     .header(
                             HttpHeaders.CONTENT_DISPOSITION,
-                            "inline; filename=\"" + fileName + "\""
-                    )
+                            disposition.toString())
                     .body(resource);
 
         } catch (ResponseStatusException exception) {
-
             throw exception;
 
         } catch (IllegalArgumentException exception) {
 
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
-                    exception.getMessage()
-            );
+                    "You are not authorized to access this document.");
 
         } catch (IOException exception) {
 
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unable to read shared document."
-            );
+                    "Unable to read shared document.");
 
         } catch (Exception exception) {
 
+            LOGGER.log(Level.SEVERE, "Shared document preview failed.", exception);
+
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unable to convert or open the shared document."
-            );
+                    "Unable to convert or open the shared document.");
         }
     }
 
@@ -256,78 +285,77 @@ public class DocumentShareController {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         try {
-
             String username = userDetails.getUsername();
 
-            // Verify recipient and DOWNLOAD permission only
+            // Verify recipient and DOWNLOAD permission
             Document document =
                     documentShareService.getSharedDocumentForDownload(
                             shareId,
-                            username
-                    );
+                            username);
 
-            // Read encrypted file
             Path filePath = Path.of(document.getStoragePath());
 
-            byte[] encryptedData =
-                    Files.readAllBytes(filePath);
+            if (!Files.isRegularFile(filePath)) {
+                throw new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Shared document file was not found.");
+            }
 
-            // Decrypt file
+            byte[] encryptedData = Files.readAllBytes(filePath);
             byte[] decryptedData =
                     FileEncryptionUtil.decrypt(encryptedData);
 
-            // Original file name
             String fileName = document.getFileName();
 
             if (fileName == null || fileName.isBlank()) {
                 fileName = "document";
             }
 
-            // Return decrypted document as downloadable attachment
-            Resource resource =
-                    new ByteArrayResource(decryptedData);
+            Resource resource = new ByteArrayResource(decryptedData);
 
-            // Audit Trail
             auditLogService.logAction(
                     username,
                     "DOWNLOAD",
-                    fileName
-            );
+                    fileName);
 
-            // Download response
+            ContentDisposition disposition =
+                    ContentDisposition.attachment()
+                            .filename(fileName, StandardCharsets.UTF_8)
+                            .build();
+
             return ResponseEntity.ok()
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .header(
                             HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=\"" + fileName + "\""
-                    )
+                            disposition.toString())
                     .contentLength(decryptedData.length)
                     .body(resource);
 
         } catch (ResponseStatusException exception) {
-
             throw exception;
 
         } catch (IllegalArgumentException exception) {
 
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
-                    exception.getMessage()
-            );
+                    "You are not authorized to download this document.");
 
         } catch (IOException exception) {
 
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unable to download shared document."
-            );
+                    "Unable to download shared document.");
 
         } catch (Exception exception) {
 
+            LOGGER.log(
+                    Level.SEVERE,
+                    "Shared document download failed.",
+                    exception);
+
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Unable to process shared document download."
-            );
+                    "Unable to process shared document download.");
         }
     }
 }

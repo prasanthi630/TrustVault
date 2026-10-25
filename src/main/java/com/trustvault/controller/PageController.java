@@ -167,6 +167,7 @@ public class PageController {
         }
     }
 
+
     // Documents page
     @GetMapping("/documents")
     public String documents(
@@ -175,14 +176,26 @@ public class PageController {
 
         String username = userDetails.getUsername();
 
-        // Get only current user's documents
+        // Get only current user's own documents
         List<Document> documents =
                 documentRepository.findByOwnerEmail(username);
 
+        // Get current user's account
+        AppUser user = appUserService.findByEmail(username);
+
+        // Send data to documents.html
+        model.addAttribute("name", user.getName());
+        model.addAttribute("documents", documents);
+        model.addAttribute("totalDocuments", documents.size());
+
+        // Count documents shared BY the current user
         model.addAttribute(
-                "documents",
-                documents);
+                "sharedDocumentsCount",
+                documentShareService
+                        .getSharedByUser(username)
+                        .size());
 
         return "documents";
     }
+
 }
